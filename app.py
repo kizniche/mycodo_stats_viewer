@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import datetime
 import operator
 import os
 from collections import OrderedDict
@@ -12,6 +13,9 @@ from influxdb import InfluxDBClient
 from config import INFLUXDB_USER
 from config import INFLUXDB_PASSWORD
 from config import INFLUXDB_DATABASE
+
+# Dictionary used to easily distinguish my own devices
+from config import OWN_IDS
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,39 +31,63 @@ def default_page():
     sort_type = 'country'
     if request.method == 'POST':
         sort_type = request.form['sorttype']
-    stats_data = get_stats_data()
-    ids = get_ids(sort_type)
-    pi_versions = get_pi_versions()
-    return render_template('mycodo_stats_view.html',
+    return render_template('index.html',
                            sort_type=sort_type,
-                           stats_data=stats_data,
-                           ids=ids,
-                           pi_versions=pi_versions)
+                           stats_data=get_stats_data(10),
+                           ids=get_ids(10, sort_type),
+                           own_ids=OWN_IDS,
+                           pi_versions=get_pi_versions())
 
 
-def get_stats_data():
+@app.route('/id/<stat_id>', methods=('GET', 'POST'))
+def id_stats(stat_id):
+    return render_template('details.html',
+                           stats_data_id=get_stats_data_id(stat_id),
+                           own_ids=OWN_IDS,
+                           pi_versions=get_pi_versions())
+
+
+def format_datetime(value):
+    return datetime.datetime.strptime(value.split(".")[0], '%Y-%m-%dT%H:%M:%S').strftime('%Y/%m/%d %H:%M')
+
+app.jinja_env.filters['datetime'] = format_datetime
+
+
+def get_stats_data_id(stat_id):
+    """Return all statistics data for an id"""
+    dbcon = influx_db.connection
+    raw_data = dbcon.query("""SELECT value
+                              FROM /.*/
+                              WHERE anonymous_id = '{}'
+                              GROUP BY *
+                              ORDER BY time DESC
+                           """.format(stat_id)).raw
+    return raw_data
+
+
+def get_stats_data(time_days):
     """Return all statistics data for the past 5 days"""
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT value
                               FROM /.*/
-                              WHERE time > now() - 5d
+                              WHERE time > now() - {}d
                               GROUP BY *
                               ORDER BY time DESC
                               LIMIT 1
-                           """).raw
+                           """.format(time_days)).raw
     return raw_data
 
 
-def get_ids(measurement):
+def get_ids(time_days, measurement):
     """Return a dictionary of user ids sorted based on measurement"""
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT value
                               FROM {}
-                              WHERE time > now() - 3d
+                              WHERE time > now() - {}d
                               GROUP BY *
                               ORDER BY time DESC
                               LIMIT 1
-                           """.format(measurement)).raw
+                           """.format(measurement, time_days)).raw
 
     # Create dictionary of ID (value) and category (value)
     dict_ids = {}
@@ -67,12 +95,12 @@ def get_ids(measurement):
         for each_value in value:
             dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
 
-    # Sort values (lowest to highest)
+    # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
     for key, value in sorted(dict_ids.iteritems(), key=lambda (k,v): (v,k)):
         sorted_dict_ids[key] = value
 
-    # Reverse sorting of values (highest to lowest)
+    # Reverse sorting (highest to lowest values)
     resorted_dict_ids = OrderedDict(reversed(list(sorted_dict_ids.items())))
 
     return resorted_dict_ids

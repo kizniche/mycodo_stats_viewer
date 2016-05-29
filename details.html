@@ -1,0 +1,158 @@
+<html>
+<head>
+  <title>Mycodo Stats</title>
+  <style type="text/css">
+    table td, th {
+      padding: 0.2em 0.5em;
+    }
+  </style>
+</head>
+<body>
+<a href="/">Home</a>
+Pi 
+{% for series in stats_data_id.series if series.name == 'RPi_revision' %}
+  {% for key, value in series.iteritems() if key == 'values' %}
+    {% for revision, pi_model in pi_versions.iteritems() if revision == value[0][1] %}
+      {{pi_model}}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+
+({%- for series in stats_data_id.series if series.name == 'id' -%}
+  {%- for key, value in series.iteritems() if key == 'values' -%}
+    {%- for id, own_host in own_ids.iteritems() if id == value[0][1] -%}
+      {{own_host}}
+    {%- else -%}
+      {{value[0][1]}}
+    {%- endfor -%}
+  {%- endfor -%}
+{%- endfor -%})
+
+<table style="font-family:Consolas, monospace">
+  {% for each_id, each_category in stats_data_id.iteritems() %}
+    <tr>
+      <td>Time</td>
+      {% for series in stats_data_id.series if series.name == 'id' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[0]|datetime}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Country</td>
+      {% for series in stats_data_id.series if series.name == 'country' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Start</td>
+      {% for series in stats_data_id.series if series.name == 'daemon_sartup_seconds'  %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]|float|round(1)}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Ram</td>
+      {% for series in stats_data_id.series if series.name == 'ram_use_mb' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]|float|round(1)}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Guests</td>
+      {% for series in stats_data_id.series if series.name == 'num_users_guest' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Admins</td>
+      {% for series in stats_data_id.series if series.name == 'num_users_admin' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Timers</td>
+      {% for series in stats_data_id.series if series.name == 'num_timers' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Sensors</td>
+      {% for series in stats_data_id.series if series.name == 'num_sensors' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Relays</td>
+      {% for series in stats_data_id.series if series.name == 'num_relays' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>PIDs</td>
+      {% for series in stats_data_id.series if series.name == 'num_pid' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Logs</td>
+      {% for series in stats_data_id.series if series.name == 'num_Logs' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>LCDs</td>
+      {% for series in stats_data_id.series if series.name == 'num_LCDs' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+  {% endfor %}
+
+</table>
+
+</body>
+</html>

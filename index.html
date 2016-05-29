@@ -37,13 +37,21 @@
   </tr>
   {% for each_id, each_category in ids.iteritems() %}
     <tr>
-      <td>{{each_id}}</td>
+      <td>
+        <a href="/id/{{each_id}}">
+        {%- for id, own_host in own_ids.iteritems() if id == each_id -%}
+          {{own_host}}
+        {%- else -%}
+          {{each_id}}
+        {%- endfor -%}
+        </a>
+      </td>
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'RPi_revision' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
+          {% for key, value in series.iteritems() if key == 'values' %}
             <td>
-              {% for revision, pi_model in pi_versions.iteritems() if revision == valuea[0][1] %}
+              {% for revision, pi_model in pi_versions.iteritems() if revision == value[0][1] %}
                 {{pi_model}}
               {% endfor %}
             </td>
@@ -53,8 +61,8 @@
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'country' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
@@ -62,8 +70,8 @@
       <td>
         {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
           {% if series.name == 'daemon_startup_seconds' or series.name == 'daemon_sartup_seconds' %}
-            {% for keya, valuea in series.iteritems() if keya == 'values' %}
-              {{valuea[0][1]|float|round(1)}} 
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]|float|round(1)}} 
             {% endfor %}
           {% endif %}
         {% endfor %}
@@ -71,80 +79,80 @@
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'ram_use_mb' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]|float|round(1)}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]|float|round(1)}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_users_guest' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_users_admin' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_timers' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_sensors' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_relays' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_pid' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_Logs' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'num_LCDs' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'next_send' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]|int}}</td>
+          {% for key, value in series.iteritems() if key == 'values' %}
+            <td>{{value[0][1]|int}}</td>
           {% endfor %}
         {% endif %}
       {% endfor %}
