@@ -1,58 +1,51 @@
 <html>
-  <head>
-    <title>Mycodo Stats</title>
-    <style type="text/css">
-      table td, th {
-        padding: 0.2em 0.5em;
-      }
-    </style>
-    <script language="JavaScript" type="text/javascript">
-      function sort(type)
-      {
-        document.sorttypeform.sorttype.value = type ;
-        document.sorttypeform.submit() ;
-      }
-    </script> 
-  </head>
-  <body>
+<head>
+  <title>Mycodo Stats</title>
+  <style type="text/css">
+    table td, th {
+      padding: 0.2em 0.5em;
+    }
+  </style>
+  <script language="JavaScript" type="text/javascript">
+    function sort(type)
+    {
+      document.sorttypeform.sorttype.value = type ;
+      document.sorttypeform.submit() ;
+    }
+  </script> 
+</head>
+<body>
 
-  <form name="sorttypeform" method="post" action="/">
-  <input type="hidden" id="sorttype" name="sorttype" />
-  <table style="font-family:Consolas, monospace">
+<form name="sorttypeform" method="post" action="/">
+<input type="hidden" id="sorttype" name="sorttype" />
+<table style="font-family:Consolas, monospace">
+  <tr>
+    <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'country' -%}Country{%- else -%}<a href="javascript:sort('country')">Country</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_users_guest' -%}Guests{%- else -%}<a href="javascript:sort('num_users_guest')">Guests</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_users_admin' -%}Admins{%- else -%}<a href="javascript:sort('num_users_admin')">Admins</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_timers' -%}Timers{%- else -%}<a href="javascript:sort('num_timers')">Timers</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_sensors' -%}Sensors{%- else -%}<a href="javascript:sort('num_sensors')">Sensors</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_relays' -%}Relays{%- else -%}<a href="javascript:sort('num_relays')">Relays</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_pids' -%}PIDs{%- else -%}<a href="javascript:sort('num_pids')">PIDs</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_Logs' -%}Logs{%- else -%}<a href="javascript:sort('num_Logs')">Logs</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_LCDs' -%}LCDs{%- else -%}<a href="javascript:sort('num_LCDs')">LCDs</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'next_send' -%}Next{%- else -%}<a href="javascript:sort('next_send')">Next</a>{%- endif -%}</th>
+  </tr>
+  {% for each_id, each_category in ids.iteritems() %}
     <tr>
-      <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'country' -%}Country{%- else -%}<a href="javascript:sort('country')">Country</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_users_guest' -%}Guests{%- else -%}<a href="javascript:sort('num_users_guest')">Guests</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_users_admin' -%}Admins{%- else -%}<a href="javascript:sort('num_users_admin')">Admins</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_timers' -%}Timers{%- else -%}<a href="javascript:sort('num_timers')">Timers</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_sensors' -%}Sensors{%- else -%}<a href="javascript:sort('num_sensors')">Sensors</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_relays' -%}Relays{%- else -%}<a href="javascript:sort('num_relays')">Relays</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_pids' -%}PIDs{%- else -%}<a href="javascript:sort('num_pids')">PIDs</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_Logs' -%}Logs{%- else -%}<a href="javascript:sort('num_Logs')">Logs</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'num_LCDs' -%}LCDs{%- else -%}<a href="javascript:sort('num_LCDs')">LCDs</a>{%- endif -%}</th>
-      <th>{%- if sort_type == 'next_send' -%}Next{%- else -%}<a href="javascript:sort('next_send')">Next</a>{%- endif -%}</th>
-    </tr>
-
-      {% for each_id, each_category in ids.iteritems() %}
-      <tr>
       <td>{{each_id}}</td>
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'RPi_revision' %}
           {% for keya, valuea in series.iteritems() if keya == 'values' %}
             <td>
-              {% if valuea[0][1] == '900093' %}Zero
-              {% elif valuea[0][1] == '000f' %}1 Model B
-              {% elif valuea[0][1] == 'a21041' %}2 Model B
-              {% elif valuea[0][1] == 'a01041' %}2 Model B
-              {% elif valuea[0][1] == 'a02082' %}3 Model B
-              {% elif valuea[0][1] == 'a22082' %}3 Model B
-              {% else %}
-                {{valuea[0][1]}}
-              {% endif %}
+              {% for revision, pi_model in pi_versions.iteritems() if revision == valuea[0][1] %}
+                {{pi_model}}
+              {% endfor %}
             </td>
           {% endfor %}
         {% endif %}
@@ -66,13 +59,15 @@
         {% endif %}
       {% endfor %}
 
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'daemon_startup_seconds' or series.name == 'daemon_sartup_seconds' %}
-          {% for keya, valuea in series.iteritems() if keya == 'values' %}
-            <td>{{valuea[0][1]|float|round(1)}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'daemon_startup_seconds' or series.name == 'daemon_sartup_seconds' %}
+            {% for keya, valuea in series.iteritems() if keya == 'values' %}
+              {{valuea[0][1]|float|round(1)}} 
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
 
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'ram_use_mb' %}
@@ -153,12 +148,11 @@
           {% endfor %}
         {% endif %}
       {% endfor %}
+    </tr>
+  {% endfor %}
+  
+</table>
+</form>
 
-      </tr>
-    {% endfor %}
-    
-  </table>
-  </form>
- 
-  </body>
+</body>
 </html>
