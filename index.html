@@ -12,27 +12,38 @@
       document.sorttypeform.sorttype.value = type ;
       document.sorttypeform.submit() ;
     }
+    function time(type)
+    {
+      document.sorttypeform.timeframe.value = type ;
+      document.sorttypeform.submit() ;
+    }
   </script> 
 </head>
 <body>
 
 <form name="sorttypeform" method="post" action="/">
-<input type="hidden" id="sorttype" name="sorttype" />
+<input type="hidden" id="timeframe" name="timeframe" value="{{timeframe}}" />
+{% if timeframe == '30' %}30d{% else %}<a href="javascript:time('30')">30d</a>{% endif %} 
+{% if timeframe == '10' %}10d{% else %}<a href="javascript:time('10')">10d</a>{% endif %} 
+{% if timeframe == '3' %}3d{% else %}<a href="javascript:time('3')">3d</a>{% endif %}
+
+<input type="hidden" id="sorttype" name="sorttype" value="{{sort_type}}"/>
 <table style="font-family:Consolas, monospace">
   <tr>
     <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
+    <th>Last</th>
     <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'country' -%}Country{%- else -%}<a href="javascript:sort('country')">Country</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_users_guest' -%}Guests{%- else -%}<a href="javascript:sort('num_users_guest')">Guests</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_users_admin' -%}Admins{%- else -%}<a href="javascript:sort('num_users_admin')">Admins</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_timers' -%}Timers{%- else -%}<a href="javascript:sort('num_timers')">Timers</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_sensors' -%}Sensors{%- else -%}<a href="javascript:sort('num_sensors')">Sensors</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_relays' -%}Relays{%- else -%}<a href="javascript:sort('num_relays')">Relays</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_pids' -%}PIDs{%- else -%}<a href="javascript:sort('num_pids')">PIDs</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_Logs' -%}Logs{%- else -%}<a href="javascript:sort('num_Logs')">Logs</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_LCDs' -%}LCDs{%- else -%}<a href="javascript:sort('num_LCDs')">LCDs</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_users_guest' -%}Guest{%- else -%}<a href="javascript:sort('num_users_guest')">Guest</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_users_admin' -%}Admin{%- else -%}<a href="javascript:sort('num_users_admin')">Admin</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Timer</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_sensors' -%}Sensor{%- else -%}<a href="javascript:sort('num_sensors')">Sensor</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_relays' -%}Relay{%- else -%}<a href="javascript:sort('num_relays')">Relay</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_pids' -%}PID{%- else -%}<a href="javascript:sort('num_pids')">PID</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_Logs' -%}Log{%- else -%}<a href="javascript:sort('num_Logs')">Log</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_LCDs' -%}LCD{%- else -%}<a href="javascript:sort('num_LCDs')">LCD</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'next_send' -%}Next{%- else -%}<a href="javascript:sort('next_send')">Next</a>{%- endif -%}</th>
   </tr>
   {% for each_id, each_category in ids.iteritems() %}
@@ -46,116 +57,182 @@
         {%- endfor -%}
         </a>
       </td>
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'RPi_revision' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'country' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][0]|datetime}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'RPi_revision' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
               {% for revision, pi_model in pi_versions.iteritems() if revision == value[0][1] %}
                 {{pi_model}}
               {% endfor %}
-            </td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'country' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
       <td>
         {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-          {% if series.name == 'daemon_startup_seconds' or series.name == 'daemon_sartup_seconds' %}
+          {% if series.name == 'country' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'daemon_startup_seconds' %}
             {% for key, value in series.iteritems() if key == 'values' %}
               {{value[0][1]|float|round(1)}} 
             {% endfor %}
           {% endif %}
         {% endfor %}
       </td>
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'ram_use_mb' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]|float|round(1)}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_users_guest' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_users_admin' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_timers' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_sensors' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_relays' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_pid' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_Logs' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
-      {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-        {% if series.name == 'num_LCDs' %}
-          {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]}}</td>
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'ram_use_mb' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]|float|round(1)}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_users_guest' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_users_admin' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_timers_active' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        /
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_timers' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_sensors_active' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        /
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_sensors' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_relays_active' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        /
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_relays' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_pids_active' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        /
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_pids' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_logs_active' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        /
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_logs' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_lcds_active' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        /
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'num_lcds' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
       {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
         {% if series.name == 'next_send' %}
           {% for key, value in series.iteritems() if key == 'values' %}
-            <td>{{value[0][1]|int}}</td>
+            {{value[0][1]|int}}
           {% endfor %}
         {% endif %}
       {% endfor %}
+      </td>
     </tr>
   {% endfor %}
   

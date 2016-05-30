@@ -92,7 +92,27 @@ Pi
     </tr>
     <tr>
       <td>Timers</td>
-      {% for series in stats_data_id.series if series.name == 'num_timers' %}
+        {% for series in stats_data_id.series if series.name == 'num_timers' %}
+          {% for key, value in series.iteritems() if key == 'values' %}
+            {% for each_value_ts in value %}
+              <td>{{each_value_ts[1]}}</td>
+            {% endfor %}
+          {% endfor %}
+        {% endfor %}
+    </tr>
+    <tr>
+      <td>Timers Active</td>
+        {% for series in stats_data_id.series if series.name == 'num_timers_active' %}
+          {% for key, value in series.iteritems() if key == 'values' %}
+            {% for each_value_ts in value %}
+              <td>{{each_value_ts[1]}}</td>
+            {% endfor %}
+          {% endfor %}
+        {% endfor %}
+    </tr>
+    <tr>
+      <td>Sensors</td>
+      {% for series in stats_data_id.series if series.name == 'num_sensors' %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]}}</td>
@@ -101,8 +121,8 @@ Pi
       {% endfor %}
     </tr>
     <tr>
-      <td>Sensors</td>
-      {% for series in stats_data_id.series if series.name == 'num_sensors' %}
+      <td>Sensors Active</td>
+      {% for series in stats_data_id.series if series.name == 'num_sensors_active' %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]}}</td>
@@ -122,7 +142,17 @@ Pi
     </tr>
     <tr>
       <td>PIDs</td>
-      {% for series in stats_data_id.series if series.name == 'num_pid' %}
+      {% for series in stats_data_id.series if series.name == 'num_pids' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>PIDs Active</td>
+      {% for series in stats_data_id.series if series.name == 'num_pids_active' %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]}}</td>
@@ -132,7 +162,17 @@ Pi
     </tr>
     <tr>
       <td>Logs</td>
-      {% for series in stats_data_id.series if series.name == 'num_Logs' %}
+      {% for series in stats_data_id.series if series.name == 'num_logs' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Logs Active</td>
+      {% for series in stats_data_id.series if series.name == 'num_logs_active' %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]}}</td>
@@ -142,7 +182,17 @@ Pi
     </tr>
     <tr>
       <td>LCDs</td>
-      {% for series in stats_data_id.series if series.name == 'num_LCDs' %}
+      {% for series in stats_data_id.series if series.name == 'num_lcds' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>LCDs Active</td>
+      {% for series in stats_data_id.series if series.name == 'num_lcds_active' %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]}}</td>

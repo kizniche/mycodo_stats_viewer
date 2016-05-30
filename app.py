@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import datetime
+import calendar
 import operator
 import os
 from collections import OrderedDict
+from datetime import datetime
 from flask import Flask, render_template, jsonify, request
-from flask.ext.influxdb import InfluxDB
+from flask_influxdb import InfluxDB
 from influxdb import InfluxDBClient
 
 from config import INFLUXDB_USER
@@ -28,13 +29,16 @@ app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
 
 @app.route('/', methods=('GET', 'POST'))
 def default_page():
+    timeframe = '3'
     sort_type = 'country'
     if request.method == 'POST':
         sort_type = request.form['sorttype']
+        timeframe = request.form['timeframe']
     return render_template('index.html',
+                           timeframe=timeframe,
                            sort_type=sort_type,
-                           stats_data=get_stats_data(10),
-                           ids=get_ids(10, sort_type),
+                           stats_data=get_stats_data(timeframe),
+                           ids=get_ids(sort_type, timeframe),
                            own_ids=OWN_IDS,
                            pi_versions=get_pi_versions())
 
@@ -48,7 +52,9 @@ def id_stats(stat_id):
 
 
 def format_datetime(value):
-    return datetime.datetime.strptime(value.split(".")[0], '%Y-%m-%dT%H:%M:%S').strftime('%Y/%m/%d %H:%M')
+    utc_dt = datetime.strptime(value.split(".")[0], '%Y-%m-%dT%H:%M:%S')
+    utc_timestamp = calendar.timegm(utc_dt.timetuple())
+    return str(datetime.fromtimestamp(utc_timestamp).strftime('%Y/%m/%d %H:%M'))
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -78,7 +84,7 @@ def get_stats_data(time_days):
     return raw_data
 
 
-def get_ids(time_days, measurement):
+def get_ids(measurement, time_days):
     """Return a dictionary of user ids sorted based on measurement"""
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT value
@@ -110,29 +116,29 @@ def get_pi_versions():
     """Returns a dictionary of raspberry pi revisions and models"""
     return {
         'Beta':'1 Beta',
-        '0002':'1 Model B',
-        '0003':'1 Model B (ECN0001)',
-        '0004':'1 Model B',
-        '0005':'1 Model B',
-        '0006':'1 Model B',
-        '000d':'1 Model B',
-        '0003':'1 Model B',
-        '000f':'1 Model B',
-        '0007':'1 Model A',
-        '0008':'1 Model A',
-        '0009':'1 Model A',
-        '0010':'1 Model B+',
+        '0002':'1 B',
+        '0003':'1 B (ECN0001)',
+        '0004':'1 B',
+        '0005':'1 B',
+        '0006':'1 B',
+        '000d':'1 B',
+        '0003':'1 B',
+        '000f':'1 B',
+        '0007':'1 A',
+        '0008':'1 A',
+        '0009':'1 A',
+        '0010':'1 B+',
         '0011':'Compute Mod',
-        '0012':'1 Model A+',
-        '0013':'1 Model B+',
+        '0012':'1 A+',
+        '0013':'1 B+',
         '0014':'Computer Mod',
-        '0015':'1 Model A+',
-        'a21041':'2 Model B',
-        'a01041':'2 Model B',
+        '0015':'1 A+',
+        'a21041':'2 B',
+        'a01041':'2 B',
         '900092':'Zero',
         '900093':'Zero',
-        'a02082':'3 Model B',
-        'a22082':'3 Model B',
+        'a02082':'3 B',
+        'a22082':'3 B',
     }
 
 
