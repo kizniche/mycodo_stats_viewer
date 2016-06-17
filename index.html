@@ -36,11 +36,11 @@
     <th>{%- if sort_type == 'country' -%}Country{%- else -%}<a href="javascript:sort('country')">Country</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_users_guest' -%}Guest{%- else -%}<a href="javascript:sort('num_users_guest')">Guest</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_users_admin' -%}Admin{%- else -%}<a href="javascript:sort('num_users_admin')">Admin</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Timer</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_sensors' -%}Sensor{%- else -%}<a href="javascript:sort('num_sensors')">Sensor</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_users_guest' -%}Gst{%- else -%}<a href="javascript:sort('num_users_guest')">Gst</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_users_admin' -%}Adm{%- else -%}<a href="javascript:sort('num_users_admin')">Adm</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_relays' -%}Relay{%- else -%}<a href="javascript:sort('num_relays')">Relay</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_sensors' -%}Sensor{%- else -%}<a href="javascript:sort('num_sensors')">Sensor</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Timer</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_pids' -%}PID{%- else -%}<a href="javascript:sort('num_pids')">PID</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_Logs' -%}Log{%- else -%}<a href="javascript:sort('num_Logs')">Log</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_LCDs' -%}LCD{%- else -%}<a href="javascript:sort('num_LCDs')">LCD</a>{%- endif -%}</th>
@@ -124,15 +124,7 @@
       </td>
       <td>
         {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-          {% if series.name == 'num_timers_active' %}
-            {% for key, value in series.iteritems() if key == 'values' %}
-              {{value[0][1]}}
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-        /
-        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-          {% if series.name == 'num_timers' %}
+          {% if series.name == 'num_relays' %}
             {% for key, value in series.iteritems() if key == 'values' %}
               {{value[0][1]}}
             {% endfor %}
@@ -158,7 +150,7 @@
       </td>
       <td>
         {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-          {% if series.name == 'num_relays_active' %}
+          {% if series.name == 'num_timers_active' %}
             {% for key, value in series.iteritems() if key == 'values' %}
               {{value[0][1]}}
             {% endfor %}
@@ -166,7 +158,7 @@
         {% endfor %}
         /
         {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
-          {% if series.name == 'num_relays' %}
+          {% if series.name == 'num_timers' %}
             {% for key, value in series.iteritems() if key == 'values' %}
               {{value[0][1]}}
             {% endfor %}

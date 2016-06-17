@@ -52,7 +52,7 @@ Pi
     </tr>
     <tr>
       <td>Start</td>
-      {% for series in stats_data_id.series if series.name == 'daemon_sartup_seconds'  %}
+      {% for series in stats_data_id.series if series.name == 'daemon_startup_seconds'  %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]|float|round(1)}}</td>
