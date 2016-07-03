@@ -32,6 +32,7 @@
   <tr>
     <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
     <th>Last</th>
+    <th>{%- if sort_type == 'Mycodo_revision' -%}Mycodo{%- else -%}<a href="javascript:sort('Mycodo_revision')">Mycodo</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'country' -%}Country{%- else -%}<a href="javascript:sort('country')">Country</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
@@ -62,6 +63,15 @@
           {% if series.name == 'country' %}
             {% for key, value in series.iteritems() if key == 'values' %}
               {{value[0][0]|datetime}}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for series in stats_data.series if series.tags.anonymous_id == each_id %}
+          {% if series.name == 'Mycodo_revision' %}
+            {% for key, value in series.iteritems() if key == 'values' %}
+              {{value[0][1]}}
             {% endfor %}
           {% endif %}
         {% endfor %}
