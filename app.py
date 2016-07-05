@@ -34,11 +34,21 @@ def default_page():
     if request.method == 'POST':
         sort_type = request.form['sorttype']
         timeframe = request.form['timeframe']
+    ids = get_ids(sort_type, timeframe)
+    countries = get_ids('country', timeframe)
+    countries_count = {}
+    for key, value in countries.iteritems():
+        if countries_count.has_key(value):
+            countries_count[value] += 1
+        else:
+            countries_count[value] = 1
     return render_template('index.html',
                            timeframe=timeframe,
                            sort_type=sort_type,
                            stats_data=get_stats_data(timeframe),
-                           ids=get_ids(sort_type, timeframe),
+                           ids=ids,
+                           countries=countries,
+                           countries_count=countries_count,
                            own_ids=OWN_IDS,
                            pi_versions=get_pi_versions())
 
