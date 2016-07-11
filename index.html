@@ -86,6 +86,8 @@
             {%- for key, value in series.iteritems() if key == 'values' -%}
               {%- for revision, pi_model in pi_versions.iteritems() if revision == value[0][1] -%}
                 {{pi_model}}
+              {%- else -%}
+                {{value[0][1]}}
               {%- endfor -%}
             {%- endfor -%}
           {%- endif -%}
