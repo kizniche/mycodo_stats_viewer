@@ -27,13 +27,16 @@
 
 <form name="sorttypeform" method="post" action="/">
 <input type="hidden" id="timeframe" name="timeframe" value="{{timeframe}}" />
-{%- if timeframe == '30' -%}30d{%- else -%}<a href="javascript:time('30')">30d</a>{%- endif -%} 
-{%- if timeframe == '10' -%}10d{%- else -%}<a href="javascript:time('10')">10d</a>{%- endif -%} 
-{%- if timeframe == '3' -%}3d{%- else -%}<a href="javascript:time('3')">3d</a>{%- endif -%}
+{%- if timeframe == '365' %}1y {% else -%}<a href="javascript:time('365')">1y</a> {% endif -%}
+{%- if timeframe == '182' %}6m {% else -%}<a href="javascript:time('182')">6m</a> {% endif -%}
+{%- if timeframe == '30' %}1m {% else -%}<a href="javascript:time('30')">1m</a> {% endif -%}
+{%- if timeframe == '10' %}10d {% else -%}<a href="javascript:time('10')">10d</a> {% endif -%}
+{%- if timeframe == '3' %}3d {% else -%}<a href="javascript:time('3')">3d</a> {% endif -%}
 
 <input type="hidden" id="sorttype" name="sorttype" value="{{sort_type}}"/>
 <table style="font-family:Consolas, monospace">
   <tr>
+    <th>#</th>
     <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
     <th>Last</th>
     <th>{%- if sort_type == 'Mycodo_revision' -%}Mycodo{%- else -%}<a href="javascript:sort('Mycodo_revision')">Mycodo</a>{%- endif -%}</th>
@@ -53,6 +56,9 @@
   </tr>
   {%- for each_id, each_category in ids.iteritems() -%}
     <tr>
+      <td>
+        {{loop.index}}
+      </td>
       <td>
         <a href="/id/{{each_id}}">
         {%- for id, own_host in own_ids.iteritems() if id == each_id -%}
