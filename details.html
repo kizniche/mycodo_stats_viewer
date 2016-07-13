@@ -51,6 +51,16 @@ Pi
       {% endfor %}
     </tr>
     <tr>
+      <td>Mycodo</td>
+      {% for series in stats_data_id.series if series.name == 'Mycodo_revision' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{each_value_ts[1]}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
       <td>Start</td>
       {% for series in stats_data_id.series if series.name == 'daemon_startup_seconds'  %}
         {% for key, value in series.iteritems() if key == 'values' %}

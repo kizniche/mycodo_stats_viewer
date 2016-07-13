@@ -20,8 +20,8 @@
   </script>
   <link rel="stylesheet" href="/static/jquery-jvectormap-2.0.3.css" type="text/css" media="screen"/>
   <script src="/static/jquery-3.0.0.min.js"></script>
-  <script src="/static/jquery-jvectormap-2.0.3.min.js"></script>
-  <script src="/static/jquery-jvectormap-world-mill.js"></script>
+  <script src="/static/highmaps.js"></script>
+  <script src="/static/world.js"></script>
 </head>
 <body>
 
@@ -253,32 +253,67 @@
 </table>
 </form>
 
- <div id="world-map" style="width: 100%; height: 450px"></div>
+  <div id="container"></div>
+
   <script>
-    $(function(){
-      var countryData = {
-        {%- for key, value in countries_count.iteritems() %}
-        "{{ key }}": {{ value }}{%- if not loop.last -%},{%- endif -%}
-        {% endfor %}
-      };
-      $('#world-map').vectorMap({
-      map: 'world_mill',
-      regionStyle: {
-        initial: {
-          fill: '#128da7'
-        }
-      },
-      backgroundColor: 'white',
-      series: {
-        regions: [{
-          values: countryData,
-          scale: ['#ff9933', '#ff0000'],
-          normalizeFunction: 'polynomial'
+    var countryData = {
+      {%- for key, value in countries_count.iteritems() %}
+      "{{ key }}": {{ value }}{%- if not loop.last -%},{%- endif -%}
+      {% endfor %}
+    };
+
+   $(function () {
+      $('#container').highcharts('Map', {
+        title: {
+          text: null
+        },
+
+        mapNavigation: {
+          enabled: true
+        },
+
+        colorAxis: {
+          min: 0,
+          stops: [
+            [0, '#EFEFFF'],
+            [0.5, Highcharts.getOptions().colors[0]],
+            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get()]
+          ]
+        },
+
+        chart: {
+          borderWidth: 0
+        },
+
+        legend: {
+          layout: 'vertical',
+          align: 'left',
+          verticalAlign: 'bottom'
+        },
+
+        credits: {
+          enabled: false,
+        },
+
+        series: [{
+          allAreas: true,
+          mapData: Highcharts.maps['custom/world'],
+          showInLegend: false,
+          data: [
+            {%- for code, value in countries_count.iteritems() -%}
+            {
+              code: '{{code}}',
+              value: {{value}}
+            }{%- if not loop.last -%},{%- endif -%}
+            {% endfor %}
+          ],
+          states: {
+            hover: {
+              color: Highcharts.getOptions().colors[2]
+            }
+          },
+          joinBy: ['iso-a2', 'code']
         }]
-      },
-      onRegionTipShow: function(e, el, code){
-        el.html(el.html()+' ('+countryData[code]+')');
-      }
       });
     });
   </script>
