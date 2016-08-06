@@ -18,6 +18,11 @@
       document.sorttypeform.submit() ;
     }
   </script>
+  <style>
+    td {
+        font-size: 0.8em;
+    }
+  </style>
   <link rel="stylesheet" href="/static/jquery-jvectormap-2.0.3.css" type="text/css" media="screen"/>
   <script src="/static/jquery-3.0.0.min.js"></script>
   <script src="/static/highmaps.js"></script>
@@ -41,7 +46,7 @@
     <th>Last</th>
     <th>{%- if sort_type == 'Mycodo_revision' -%}Mycodo{%- else -%}<a href="javascript:sort('Mycodo_revision')">Mycodo</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'country' -%}Country{%- else -%}<a href="javascript:sort('country')">Country</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'country' -%}Loc{%- else -%}<a href="javascript:sort('country')">Loc</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_users_guest' -%}Gst{%- else -%}<a href="javascript:sort('num_users_guest')">Gst</a>{%- endif -%}</th>
@@ -49,6 +54,8 @@
     <th>{%- if sort_type == 'num_relays' -%}Relay{%- else -%}<a href="javascript:sort('num_relays')">Relay</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_sensors' -%}Sensor{%- else -%}<a href="javascript:sort('num_sensors')">Sensor</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Timer</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_methods' -%}Meth{%- else -%}<a href="javascript:sort('num_methods')">Meth</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_methods_in_pid' -%}Use<sub>Meth</sub>{%- else -%}<a href="javascript:sort('num_methods_in_pid')">Use<sub>Meth</sub></a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_pids' -%}PID{%- else -%}<a href="javascript:sort('num_pids')">PID</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_Logs' -%}Log{%- else -%}<a href="javascript:sort('num_Logs')">Log</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_LCDs' -%}LCD{%- else -%}<a href="javascript:sort('num_LCDs')">LCD</a>{%- endif -%}</th>
@@ -181,6 +188,24 @@
         /
         {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
           {%- if series.name == 'num_timers' -%}
+            {%- for key, value in series.iteritems() if key == 'values' -%}
+              {{value[0][1]}}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </td>
+      <td>
+        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
+          {%- if series.name == 'num_methods' -%}
+            {%- for key, value in series.iteritems() if key == 'values' -%}
+              {{value[0][1]}}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </td>
+      <td>
+        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
+          {%- if series.name == 'num_methods_in_pid' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
               {{value[0][1]}}
             {%- endfor -%}
