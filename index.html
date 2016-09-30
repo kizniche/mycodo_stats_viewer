@@ -56,7 +56,6 @@
     <th>{%- if sort_type == 'num_sensors' -%}Sensor{%- else -%}<a href="javascript:sort('num_sensors')">Sensor</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Timer</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_methods' -%}Meth{%- else -%}<a href="javascript:sort('num_methods')">Meth</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_methods_in_pid' -%}Use<sub>Meth</sub>{%- else -%}<a href="javascript:sort('num_methods_in_pid')">Use<sub>Meth</sub></a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_pids' -%}PID{%- else -%}<a href="javascript:sort('num_pids')">PID</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_Logs' -%}Log{%- else -%}<a href="javascript:sort('num_Logs')">Log</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_LCDs' -%}LCD{%- else -%}<a href="javascript:sort('num_LCDs')">LCD</a>{%- endif -%}</th>
@@ -206,16 +205,15 @@
       </td>
       <td>
         {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_methods' -%}
+          {%- if series.name == 'num_methods_in_pid' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
               {{value[0][1]}}
             {%- endfor -%}
           {%- endif -%}
         {%- endfor -%}
-      </td>
-      <td>
+        /
         {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_methods_in_pid' -%}
+          {%- if series.name == 'num_methods' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
               {{value[0][1]}}
             {%- endfor -%}
