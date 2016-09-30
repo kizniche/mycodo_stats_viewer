@@ -97,7 +97,7 @@
         {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
           {%- if series.name == 'git_commit' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
+              <a href="https://github.com/kizniche/Mycodo/commit/{{value[0][1]}}" target="_blank">{{value[0][1]}}</a>
             {%- endfor -%}
           {%- endif -%}
         {%- endfor -%}
