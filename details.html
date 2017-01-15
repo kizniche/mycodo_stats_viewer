@@ -51,21 +51,11 @@ Pi
       {% endfor %}
     </tr>
     <tr>
-      <td>Mycodo</td>
+      <td>Ver.</td>
       {% for series in stats_data_id.series if series.name == 'Mycodo_revision' %}
         {% for key, value in series.iteritems() if key == 'values' %}
           {% for each_value_ts in value %}
             <td>{{each_value_ts[1]}}</td>
-          {% endfor %}
-        {% endfor %}
-      {% endfor %}
-    </tr>
-    <tr>
-      <td>Git</td>
-      {% for series in stats_data_id.series if series.name == 'git_commit' %}
-        {% for key, value in series.iteritems() if key == 'values' %}
-          {% for each_value_ts in value %}
-            <td><a href="https://github.com/kizniche/Mycodo/commit/{{each_value_ts[1]}}" target="_blank">{{each_value_ts[1]}}</a></td>
           {% endfor %}
         {% endfor %}
       {% endfor %}
