@@ -82,7 +82,7 @@ def get_stats_data_id(stat_id):
 
 
 def get_stats_data(time_days):
-    """Return all statistics data for the past 5 days"""
+    """Return all statistics data for the past time_days days"""
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT value
                               FROM /.*/
@@ -146,10 +146,13 @@ def get_pi_versions():
         '0015':'1 A+',
         'a21041':'2 B',
         'a01041':'2 B',
+        '2a01041':'2 B',
         '900092':'Zero',
         '900093':'Zero',
+        '920093':'Zero',
         'a02082':'3 B',
         'a22082':'3 B',
+        '2a02082':'3 B'
     }
 
 

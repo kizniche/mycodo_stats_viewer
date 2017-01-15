@@ -45,7 +45,6 @@
     <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
     <th>Last</th>
     <th>{%- if sort_type == 'Mycodo_revision' -%}Mycodo{%- else -%}<a href="javascript:sort('Mycodo_revision')">Mycodo</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'git_commit' -%}Git{%- else -%}<a href="javascript:sort('git_commit')">Git</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'country' -%}Loc{%- else -%}<a href="javascript:sort('country')">Loc</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
@@ -75,7 +74,7 @@
         {%- endfor -%}
         </a>
       </td>
-      <td>
+      <td style="white-space: nowrap;">
         {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
           {%- if series.name == 'country' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
@@ -89,15 +88,6 @@
           {%- if series.name == 'Mycodo_revision' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
               {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'git_commit' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              <a href="https://github.com/kizniche/Mycodo/commit/{{value[0][1]}}" target="_blank">{{value[0][1]}}</a>
             {%- endfor -%}
           {%- endif -%}
         {%- endfor -%}
