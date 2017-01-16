@@ -191,26 +191,6 @@ Pi
       {% endfor %}
     </tr>
     <tr>
-      <td>Logs</td>
-      {% for series in stats_data_id.series if series.name == 'num_logs' %}
-        {% for key, value in series.iteritems() if key == 'values' %}
-          {% for each_value_ts in value %}
-            <td>{{each_value_ts[1]}}</td>
-          {% endfor %}
-        {% endfor %}
-      {% endfor %}
-    </tr>
-    <tr>
-      <td>Logs Active</td>
-      {% for series in stats_data_id.series if series.name == 'num_logs_active' %}
-        {% for key, value in series.iteritems() if key == 'values' %}
-          {% for each_value_ts in value %}
-            <td>{{each_value_ts[1]}}</td>
-          {% endfor %}
-        {% endfor %}
-      {% endfor %}
-    </tr>
-    <tr>
       <td>LCDs</td>
       {% for series in stats_data_id.series if series.name == 'num_lcds' %}
         {% for key, value in series.iteritems() if key == 'values' %}
