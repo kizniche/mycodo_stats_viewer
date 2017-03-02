@@ -41,6 +41,16 @@ Pi
       {% endfor %}
     </tr>
     <tr>
+      <td>Uptime</td>
+      {% for series in stats_data_id.series if series.name == 'uptime' %}
+        {% for key, value in series.iteritems() if key == 'values' %}
+          {% for each_value_ts in value %}
+            <td>{{'%0.1f' % each_value_ts[1]|float}}</td>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    <tr>
       <td>Country</td>
       {% for series in stats_data_id.series if series.name == 'country' %}
         {% for key, value in series.iteritems() if key == 'values' %}

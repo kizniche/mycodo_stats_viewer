@@ -44,6 +44,7 @@
     <th>#</th>
     <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
     <th>Last</th>
+    <th>{%- if sort_type == 'uptime' -%}Up{%- else -%}<a href="javascript:sort('uptime')">Up</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'Mycodo_revision' -%}M Ver.{%- else -%}<a href="javascript:sort('Mycodo_revision')">M Ver.</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'alembic_version' -%}A Ver.{%- else -%}<a href="javascript:sort('alembic_version')">A Ver.</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
@@ -52,10 +53,10 @@
     <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_users_guest' -%}Gst{%- else -%}<a href="javascript:sort('num_users_guest')">Gst</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_users_admin' -%}Adm{%- else -%}<a href="javascript:sort('num_users_admin')">Adm</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_relays' -%}Relay{%- else -%}<a href="javascript:sort('num_relays')">Relay</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_sensors' -%}Sensor{%- else -%}<a href="javascript:sort('num_sensors')">Sensor</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_relays' -%}Rel{%- else -%}<a href="javascript:sort('num_relays')">Rel</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_sensors' -%}Sens{%- else -%}<a href="javascript:sort('num_sensors')">Sens</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_conditionals' -%}Cond{%- else -%}<a href="javascript:sort('num_conditionals')">Cond</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Timer</a>{%- endif -%}</th>
+    <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Tim</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_methods' -%}Meth{%- else -%}<a href="javascript:sort('num_methods')">Meth</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_pids' -%}PID{%- else -%}<a href="javascript:sort('num_pids')">PID</a>{%- endif -%}</th>
     <th>{%- if sort_type == 'num_LCDs' -%}LCD{%- else -%}<a href="javascript:sort('num_LCDs')">LCD</a>{%- endif -%}</th>
@@ -80,6 +81,15 @@
           {%- if series.name == 'country' -%}
             {%- for key, value in series.iteritems() if key == 'values' -%}
               {{value[0][0]|datetime}}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </td>
+      <td>
+        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
+          {%- if series.name == 'uptime' -%}
+            {%- for key, value in series.iteritems() if key == 'values' -%}
+              {{'%0.1f' % value[0][1]|float}}
             {%- endfor -%}
           {%- endif -%}
         {%- endfor -%}
