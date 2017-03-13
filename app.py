@@ -3,6 +3,7 @@
 
 import argparse
 import calendar
+import logging
 import operator
 import os
 from collections import OrderedDict
@@ -108,8 +109,9 @@ def get_ids(measurement, time_days):
     # Create dictionary of ID (value) and category (value)
     dict_ids = {}
     for key, value in raw_data.iteritems():
-        for each_value in value:
-            dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
+    	if value != 0:
+	        for each_value in value:
+	            dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
