@@ -3,9 +3,12 @@
 
 import argparse
 import calendar
+import json
 import logging
 import operator
 import os
+import time
+import timeit
 from collections import OrderedDict
 from datetime import datetime
 from flask import Flask, render_template, jsonify, request
@@ -17,7 +20,12 @@ from config import INFLUXDB_PASSWORD
 from config import INFLUXDB_DATABASE
 
 # Dictionary used to easily distinguish my own devices
+from config import COLUMNS
 from config import OWN_IDS
+from config import PI_VERSIONS
+from config import STATS
+
+logger = logging.basicConfig()
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,36 +38,113 @@ app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
 
 @app.route('/', methods=('GET', 'POST'))
 def default_page():
+    timer = timeit.default_timer()
     timeframe = '3'
     sort_type = 'country'
     if request.method == 'POST':
         sort_type = request.form['sorttype']
         timeframe = request.form['timeframe']
+
+    stats_data = get_stats_data(timeframe)
+    parsed_data = {}
+
+    def get_value(data_input, data_name, return_type):
+        if data_input['name'] == data_name:
+            for key, value in data_input.items():
+                if key == 'values':
+                    if return_type == 'int':
+                        parsed_data[each_id][data_name] = '{}'.format(int(float(value[0][1])))
+                    elif return_type == 'float':
+                        parsed_data[each_id][data_name] = '{:.1f}'.format(float(value[0][1]))
+                    elif return_type == 'str':
+                        parsed_data[each_id][data_name] = '{}'.format(str(value[0][1]))
+
     ids = get_ids(sort_type, timeframe)
-    countries = get_ids('country', timeframe)
+    for each_id, each_category in ids.items():
+        parsed_data[each_id] = {}
+        for known_id, own_host in OWN_IDS.items():
+            if known_id == each_id:
+                parsed_data[each_id]['host'] = own_host
+            else:
+                parsed_data[each_id]['host'] = each_id
+
+        for series in stats_data['series']:
+            if series['tags']['anonymous_id'] == each_id:
+                if series['name'] == 'country':
+                    for key, value in series.items():
+                        if key == 'values':
+                            time_obj = time.strptime(value[0][0][0:19], "%Y-%m-%dT%H:%M:%S")
+                            parsed_data[each_id]['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time_obj)
+
+                for stat, stat_type, _ in STATS:
+                    get_value(series, stat, stat_type)
+
+        if parsed_data[each_id]['RPi_revision'] in PI_VERSIONS:
+            parsed_data[each_id]['RPi_revision'] = PI_VERSIONS[parsed_data[each_id]['RPi_revision']]
+
     countries_count = {}
-    for key, value in countries.iteritems():
-        if countries_count.has_key(value):
-            countries_count[value] += 1
+    for each_id, values in parsed_data.items():
+        if countries_count.has_key(parsed_data[each_id]['country']):
+            countries_count[parsed_data[each_id]['country']] += 1
         else:
-            countries_count[value] = 1
+            countries_count[parsed_data[each_id]['country']] = 1
+
+    app.logger.info("{name}: Completion time: {time} seconds".format(
+      name=__name__, time=timeit.default_timer() - timer))
     return render_template('index.html',
+                           columns=COLUMNS,
                            timeframe=timeframe,
                            sort_type=sort_type,
-                           stats_data=get_stats_data(timeframe),
+                           stats_data=stats_data,
                            ids=ids,
-                           countries=countries,
                            countries_count=countries_count,
                            own_ids=OWN_IDS,
-                           pi_versions=get_pi_versions())
+                           parsed_data=parsed_data,
+                           pi_versions=PI_VERSIONS,
+                           stats=STATS)
 
 
 @app.route('/id/<stat_id>', methods=('GET', 'POST'))
 def id_stats(stat_id):
+    timer = timeit.default_timer()
+    stats_data_id = get_stats_data_id(stat_id)
+    parsed_data = {}
+
+    def get_values(data_input, data_name, return_type):
+        if data_input['name'] == data_name:
+            parsed_data[data_name] = []
+            for key, value in data_input.items():
+                if key == 'values':
+                    if return_type == 'int':
+                        for each_value in value:
+                            parsed_data[data_name].append('{}'.format(int(float(each_value[1]))))
+                    elif return_type == 'float':
+                        for each_value in value:
+                            parsed_data[data_name].append('{:.1f}'.format(float(each_value[1])))
+                    elif return_type == 'str':
+                        for each_value in value:
+                            parsed_data[data_name].append('{}'.format(str(each_value[1])))
+
+    for series in stats_data_id['series']:
+        if series['name'] == 'RPi_revision':
+            parsed_data['time'] = []
+            for key, value in series.items():
+                if key == 'values':
+                    for each_value in value:
+                        time_obj = time.strptime(each_value[0][0:19], "%Y-%m-%dT%H:%M:%S")
+                        parsed_data['time'].append(time.strftime("%Y-%m-%d %H:%M:%S", time_obj))
+
+        for stat, stat_type, _ in STATS:
+            get_values(series, stat, stat_type)
+
+    app.logger.info("{name}: Completion time: {time} seconds".format(
+      name=__name__, time=timeit.default_timer() - timer))
     return render_template('details.html',
-                           stats_data_id=get_stats_data_id(stat_id),
+                           stats_data_id=stats_data_id,
                            own_ids=OWN_IDS,
-                           pi_versions=get_pi_versions())
+                           parsed_data=parsed_data,
+                           pi_versions=PI_VERSIONS,
+                           stats=STATS)
 
 
 def format_datetime(value):
@@ -124,41 +209,6 @@ def get_ids(measurement, time_days):
     return resorted_dict_ids
 
 
-def get_pi_versions():
-    """Returns a dictionary of raspberry pi revisions and models"""
-    return {
-        'Beta':'1 Beta',
-        '0002':'1 B',
-        '0003':'1 B (ECN0001)',
-        '0004':'1 B',
-        '0005':'1 B',
-        '0006':'1 B',
-        '000d':'1 B',
-        '100000e':'1 B',
-        '000e':'1 B',
-        '000f':'1 B',
-        '0007':'1 A',
-        '0008':'1 A',
-        '0009':'1 A',
-        '0010':'1 B+',
-        '0011':'Compute Mod',
-        '0012':'1 A+',
-        '0013':'1 B+',
-        '0014':'Computer Mod',
-        '0015':'1 A+',
-        'a21041':'2 B',
-        'a01041':'2 B',
-        '2a01041':'2 B',
-        '900092':'Zero',
-        '900093':'Zero',
-        '920093':'Zero',
-        '9000c1':'ZeroW',
-        'a02082':'3 B',
-        'a22082':'3 B',
-        '2a02082':'3 B'
-    }
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Mycodo Flask HTTP server.",
                                      formatter_class=argparse.RawTextHelpFormatter)
@@ -168,10 +218,10 @@ if __name__ == '__main__':
                               help="Run Flask with debug=True (Default: False)")
 
     args = parser.parse_args()
+    debug = args.debug
 
-    if args.debug:
-        debug=True
-    else:
-        debug=False
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(handler)
 
-    app.run(host='0.0.0.0', debug=debug)
+    app.run(host='0.0.0.0', port=5000, debug=debug)

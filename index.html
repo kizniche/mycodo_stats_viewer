@@ -32,6 +32,7 @@
 
 <form name="sorttypeform" method="post" action="/">
 <input type="hidden" id="timeframe" name="timeframe" value="{{timeframe}}" />
+{%- if timeframe == '365' %}1y {% else -%}<a href="javascript:time('730')">2y</a> {% endif -%}
 {%- if timeframe == '365' %}1y {% else -%}<a href="javascript:time('365')">1y</a> {% endif -%}
 {%- if timeframe == '182' %}6m {% else -%}<a href="javascript:time('182')">6m</a> {% endif -%}
 {%- if timeframe == '30' %}1m {% else -%}<a href="javascript:time('30')">1m</a> {% endif -%}
@@ -42,254 +43,22 @@
 <table style="font-family:Consolas, monospace">
   <tr>
     <th>#</th>
-    <th>{%- if sort_type == 'id' -%}ID{%- else -%}<a href="javascript:sort('id')">ID</a>{%- endif -%}</th>
+    {% for name, sort, _ in columns %}
+      {% if name == 'Last' %}
     <th>Last</th>
-    <th>{%- if sort_type == 'uptime' -%}Up{%- else -%}<a href="javascript:sort('uptime')">Up</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'Mycodo_revision' -%}M Ver.{%- else -%}<a href="javascript:sort('Mycodo_revision')">M Ver.</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'alembic_version' -%}A Ver.{%- else -%}<a href="javascript:sort('alembic_version')">A Ver.</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'RPi_revision' -%}Pi{%- else -%}<a href="javascript:sort('RPi_revision')">Pi</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'country' -%}Loc{%- else -%}<a href="javascript:sort('country')">Loc</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'daemon_sartup_seconds' -%}Start{%- else -%}<a href="javascript:sort('daemon_sartup_seconds')">Start</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'ram_use_mb' -%}Ram{%- else -%}<a href="javascript:sort('ram_use_mb')">Ram</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_users_guest' -%}Gst{%- else -%}<a href="javascript:sort('num_users_guest')">Gst</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_users_admin' -%}Adm{%- else -%}<a href="javascript:sort('num_users_admin')">Adm</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_relays' -%}Rel{%- else -%}<a href="javascript:sort('num_relays')">Rel</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_sensors' -%}Sens{%- else -%}<a href="javascript:sort('num_sensors')">Sens</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_conditionals' -%}Cond{%- else -%}<a href="javascript:sort('num_conditionals')">Cond</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_timers' -%}Timer{%- else -%}<a href="javascript:sort('num_timers')">Tim</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_methods' -%}Meth{%- else -%}<a href="javascript:sort('num_methods')">Meth</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_pids' -%}PID{%- else -%}<a href="javascript:sort('num_pids')">PID</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'num_LCDs' -%}LCD{%- else -%}<a href="javascript:sort('num_LCDs')">LCD</a>{%- endif -%}</th>
-    <th>{%- if sort_type == 'next_send' -%}Next{%- else -%}<a href="javascript:sort('next_send')">Next</a>{%- endif -%}</th>
+      {% else %}
+    <th>{%- if sort_type == sort -%}{{name}}{%- else -%}<a href="javascript:sort('{{sort}}')">{{name}}</a>{%- endif -%}</th>
+      {% endif %}
+    {% endfor %}
   </tr>
   {%- for each_id, each_category in ids.iteritems() -%}
     <tr>
-      <td>
-        {{loop.index}}
-      </td>
-      <td>
-        <a href="/id/{{each_id}}">
-        {%- for id, own_host in own_ids.iteritems() if id == each_id -%}
-          {{own_host}}
-        {%- else -%}
-          {{each_id}}
-        {%- endfor -%}
-        </a>
-      </td>
-      <td style="white-space: nowrap;">
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'country' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][0]|datetime}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'uptime' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{'%0.1f' % value[0][1]|float}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'Mycodo_revision' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-       <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'alembic_version' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'RPi_revision' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {%- for revision, pi_model in pi_versions.iteritems() if revision == value[0][1] -%}
-                {{pi_model}}
-              {%- else -%}
-                {{value[0][1]}}
-              {%- endfor -%}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'country' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'daemon_startup_seconds' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]|float|round(1)}} 
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'ram_use_mb' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]|float|round(1)}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_users_guest' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_users_admin' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_relays' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_sensors_active' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-        /
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_sensors' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_conditionals_active' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-        /
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_conditionals' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_timers_active' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-        /
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_timers' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_methods_in_pid' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-        /
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_methods' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_pids_active' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-        /
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_pids' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_lcds_active' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-        /
-        {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-          {%- if series.name == 'num_lcds' -%}
-            {%- for key, value in series.iteritems() if key == 'values' -%}
-              {{value[0][1]}}
-            {%- endfor -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </td>
-      <td>
-      {%- for series in stats_data.series if series.tags.anonymous_id == each_id -%}
-        {%- if series.name == 'next_send' -%}
-          {%- for key, value in series.iteritems() if key == 'values' -%}
-            {{value[0][1]|int}}
-          {%- endfor -%}
-        {%- endif -%}
-      {%- endfor -%}
-      </td>
+      <td>{{loop.index}}</td>
+      <td><a href="/id/{{each_id}}">{{parsed_data[each_id]['host']}}</a></td>
+      <td>{{parsed_data[each_id]['time']}}</td>
+    {% for _, stat, stat_add in columns if stat not in ['id', 'last'] %}
+      <td>{% if stat_add %}{{parsed_data[each_id][stat_add]}}/{% endif %}{{parsed_data[each_id][stat]}}</td>
+    {% endfor %}
     </tr>
   {%- endfor -%}
   
@@ -299,12 +68,6 @@
   <div id="container"></div>
 
   <script>
-    var countryData = {
-      {%- for key, value in countries_count.iteritems() %}
-      "{{ key }}": {{ value }}{%- if not loop.last -%},{%- endif -%}
-      {% endfor %}
-    };
-
    $(function () {
       $('#container').highcharts('Map', {
         title: {
@@ -316,11 +79,14 @@
         },
 
         colorAxis: {
-          min: 0,
+          min: 1,
+          max: 10,
           stops: [
-            [0, '#EFEFFF'],
-            [0.5, Highcharts.getOptions().colors[0]],
-            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get()]
+            [0, '#4C4CFF'],
+            [0.1, '#4C4CFF'],
+            [0.3, '#00FF00'],
+            [0.4, '#FF7700'],
+            [1, '#FF0000']
           ]
         },
 
