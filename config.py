@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-
-if os.path.exists('secret_variables.py'):
-    from secret_variables import INFLUXDB_USER
-    from secret_variables import INFLUXDB_PASSWORD
-    from secret_variables import INFLUXDB_DATABASE
-    from secret_variables import OWN_IDS
+from secret_variables import INFLUXDB_USER
+from secret_variables import INFLUXDB_PASSWORD
+from secret_variables import INFLUXDB_DATABASE
+from secret_variables import OWN_IDS
 
 STATS = [
     ('uptime', 'float', 'Uptime'),
