@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 import argparse
 import calendar
 import json
@@ -35,6 +34,7 @@ influx_db = InfluxDB(app)
 app.config['INFLUXDB_USER'] = INFLUXDB_USER
 app.config['INFLUXDB_PASSWORD'] = INFLUXDB_PASSWORD
 app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
+
 
 @app.route('/', methods=('GET', 'POST'))
 def default_page():
@@ -194,9 +194,9 @@ def get_ids(measurement, time_days):
     # Create dictionary of ID (value) and category (value)
     dict_ids = {}
     for key, value in raw_data.iteritems():
-    	if value != 0:
-	        for each_value in value:
-	            dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
+        if value != 0:
+            for each_value in value:
+                dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
@@ -210,12 +210,13 @@ def get_ids(measurement, time_days):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Mycodo Flask HTTP server.",
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description="Mycodo Viewer Flask HTTP server",
+        formatter_class=argparse.RawTextHelpFormatter)
 
     options = parser.add_argument_group('Options')
     options.add_argument('-d', '--debug', action='store_true',
-                              help="Run Flask with debug=True (Default: False)")
+                         help="Run Flask with debug=True (Default: False)")
 
     args = parser.parse_args()
     debug = args.debug
