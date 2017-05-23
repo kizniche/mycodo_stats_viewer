@@ -2,25 +2,22 @@
 # -*- coding: utf-8 -*-
 import argparse
 import calendar
-import json
 import logging
-import operator
 import os
 import time
 import timeit
 from collections import OrderedDict
 from datetime import datetime
-from flask import Flask, render_template, jsonify, request
+from flask import Flask
+from flask import render_template
+from flask import request
 from flask_influxdb import InfluxDB
-from influxdb import InfluxDBClient
 
-from config import INFLUXDB_USER
-from config import INFLUXDB_PASSWORD
-from config import INFLUXDB_DATABASE
-
-# Dictionary used to easily distinguish my own devices
+from secret_variables import INFLUXDB_USER
+from secret_variables import INFLUXDB_PASSWORD
+from secret_variables import INFLUXDB_DATABASE
+from secret_variables import OWN_IDS
 from config import COLUMNS
-from config import OWN_IDS
 from config import PI_VERSIONS
 from config import STATS
 
