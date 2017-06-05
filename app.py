@@ -21,8 +21,6 @@ from config import COLUMNS
 from config import PI_VERSIONS
 from config import STATS
 
-logger = logging.basicConfig()
-
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -62,8 +60,9 @@ def default_page():
         for known_id, own_host in OWN_IDS.items():
             if known_id == each_id:
                 parsed_data[each_id]['host'] = own_host
-            else:
-                parsed_data[each_id]['host'] = each_id
+                break
+        if 'host' not in parsed_data[each_id]:
+            parsed_data[each_id]['host'] = each_id
 
         for series in stats_data['series']:
             if series['tags']['anonymous_id'] == each_id:
@@ -72,6 +71,7 @@ def default_page():
                         if key == 'values':
                             time_obj = time.strptime(value[0][0][0:19], "%Y-%m-%dT%H:%M:%S")
                             parsed_data[each_id]['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time_obj)
+                            break
 
                 for stat, stat_type, _ in STATS:
                     get_value(series, stat, stat_type)
@@ -167,7 +167,7 @@ def get_stats_data_id(stat_id):
 def get_stats_data(time_days):
     """Return all statistics data for the past time_days days"""
     dbcon = influx_db.connection
-    raw_data = dbcon.query("""SELECT value
+    raw_data = dbcon.query("""SELECT last(value)
                               FROM /.*/
                               WHERE time > now() - {}d
                               GROUP BY *
@@ -197,7 +197,7 @@ def get_ids(measurement, time_days):
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
-    for key, value in sorted(dict_ids.iteritems(), key=lambda (k,v): (v,k)):
+    for key, value in sorted(dict_ids.iteritems(), key=lambda (k, v): (v, k)):
         sorted_dict_ids[key] = value
 
     # Reverse sorting (highest to lowest values)
