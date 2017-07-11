@@ -69,8 +69,11 @@ def default_page():
                 if series['name'] == 'country':
                     for key, value in series.items():
                         if key == 'values':
-                            time_obj = time.strptime(value[0][0][0:19], "%Y-%m-%dT%H:%M:%S")
-                            parsed_data[each_id]['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time_obj)
+                            # Convert UTC timestamp to local server timezone
+                            utc_datetime = datetime.strptime(value[0][0][0:19], "%Y-%m-%dT%H:%M:%S")
+                            now_timestamp = time.time()
+                            offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
+                            parsed_data[each_id]['time'] = datetime.strftime(utc_datetime + offset, "%Y-%m-%d %H:%M:%S")
                             break
 
                 for stat, stat_type, _ in STATS:
