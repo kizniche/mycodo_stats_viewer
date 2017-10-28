@@ -35,7 +35,7 @@ app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
 def default_page():
     timer = timeit.default_timer()
     timeframe = '3'
-    sort_type = 'country'
+    sort_type = 'Mycodo_revision'
     if request.method == 'POST':
         sort_type = request.form['sorttype']
         timeframe = request.form['timeframe']
@@ -66,7 +66,7 @@ def default_page():
 
         for series in stats_data['series']:
             if series['tags']['anonymous_id'] == each_id:
-                if series['name'] == 'country':
+                if series['name'] == 'Mycodo_revision':
                     for key, value in series.items():
                         if key == 'values':
                             # Convert UTC timestamp to local server timezone
@@ -84,10 +84,11 @@ def default_page():
 
     countries_count = {}
     for each_id, values in parsed_data.items():
-        if countries_count.has_key(parsed_data[each_id]['country']):
-            countries_count[parsed_data[each_id]['country']] += 1
-        else:
-            countries_count[parsed_data[each_id]['country']] = 1
+        if 'country' in parsed_data[each_id]:
+            if parsed_data[each_id]['country'] in countries_count:
+                countries_count[parsed_data[each_id]['country']] += 1
+            else:
+                countries_count[parsed_data[each_id]['country']] = 1
 
     app.logger.info("{name}: Completion time: {time} seconds".format(
       name=__name__, time=timeit.default_timer() - timer))
@@ -172,11 +173,11 @@ def get_stats_data(time_days):
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT last(value)
                               FROM /.*/
-                              WHERE time > now() - {}d
+                              WHERE time > now() - {time}d
                               GROUP BY *
                               ORDER BY time DESC
                               LIMIT 1
-                           """.format(time_days)).raw
+                           """.format(time=time_days)).raw
     return raw_data
 
 
@@ -184,12 +185,14 @@ def get_ids(measurement, time_days):
     """Return a dictionary of user ids sorted based on measurement"""
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT value
-                              FROM {}
-                              WHERE time > now() - {}d
+                              FROM {measurement}
+                              WHERE time > now() - {time}d
                               GROUP BY *
                               ORDER BY time DESC
                               LIMIT 1
-                           """.format(measurement, time_days)).raw
+                           """.format(measurement=measurement,
+                                      time=time_days)
+                           ).raw
 
     # Create dictionary of ID (value) and category (value)
     dict_ids = {}
