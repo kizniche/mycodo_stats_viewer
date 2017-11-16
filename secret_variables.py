@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-INFLUXDB_USER = 'user'
-INFLUXDB_PASSWORD = 'thisissupersecretandyoucantknowit'
 INFLUXDB_DATABASE = 'mycodo_stats'
 
 OWN_IDS = {

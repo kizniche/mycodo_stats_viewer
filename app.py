@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 import argparse
 import calendar
@@ -13,8 +12,6 @@ from flask import render_template
 from flask import request
 from flask_influxdb import InfluxDB
 
-from secret_variables import INFLUXDB_USER
-from secret_variables import INFLUXDB_PASSWORD
 from secret_variables import INFLUXDB_DATABASE
 from secret_variables import OWN_IDS
 from config import COLUMNS
@@ -26,8 +23,6 @@ tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__, template_folder=tmpl_dir)
 influx_db = InfluxDB(app)
 
-app.config['INFLUXDB_USER'] = INFLUXDB_USER
-app.config['INFLUXDB_PASSWORD'] = INFLUXDB_PASSWORD
 app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
 
 
