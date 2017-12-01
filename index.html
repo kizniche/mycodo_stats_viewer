@@ -3,7 +3,7 @@
   <title>Mycodo Stats</title>
   <style type="text/css">
     table td, th {
-      padding: 0.2em 0.3em;
+      padding: 0.15em 0.2em;
     }
   </style>
   <script language="JavaScript" type="text/javascript">
@@ -51,14 +51,14 @@
     {% endfor %}
   </tr>
   {%- for each_id, each_category in ids.iteritems() -%}
-    <tr>
-      <td>{{loop.index}}</td>
-      <td><a href="/id/{{each_id}}">{{parsed_data[each_id]['host']}}</a></td>
-      <td>{{parsed_data[each_id]['time']}}</td>
+  <tr>
+    <td>{{loop.index}}</td>
+    <td><a href="/id/{{each_id}}">{{parsed_data[each_id]['host']}}</a></td>
+    <td>{{parsed_data[each_id]['time']}}</td>
     {% for _, stat, stat_add in columns if stat not in ['id', 'last'] %}
-      <td>{% if stat_add %}{{parsed_data[each_id][stat_add]}}/{% endif %}{{parsed_data[each_id][stat]}}</td>
+    <td>{% if stat_add %}{{parsed_data[each_id][stat_add]}}/{% endif %}{{parsed_data[each_id][stat]}}</td>
     {% endfor %}
-    </tr>
+  </tr>
   {%- endfor -%}
   
 </table>

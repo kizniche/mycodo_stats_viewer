@@ -22,16 +22,15 @@ STATS = [
     ('num_pids_active', 'int', 'PIDs Active'),
     ('num_pids', 'int', 'PIDs'),
     ('num_lcds_active', 'int', 'LCDs Active'),
-    ('num_lcds', 'int', 'LCDs'),
-    ('next_send', 'int', 'Next Send')
+    ('num_lcds', 'int', 'LCDs')
 ]
 
 COLUMNS = [
     ('ID', 'id', ''),
     ('Last', 'last', ''),
     ('Up', 'uptime', ''),
-    ('M Ver.', 'Mycodo_revision', ''),
-    ('A Ver.', 'alembic_version', ''),
+    ('M Ver', 'Mycodo_revision', ''),
+    ('A Ver', 'alembic_version', ''),
     ('Pi', 'RPi_revision', ''),
     ('Loc', 'country', ''),
     ('Start', 'daemon_startup_seconds', ''),
@@ -44,8 +43,7 @@ COLUMNS = [
     ('Tim', 'num_timers', 'num_timers_active'),
     ('Meth', 'num_methods', 'num_methods_in_pid'),
     ('PID', 'num_pids', 'num_pids_active'),
-    ('LCD', 'num_lcds', 'num_lcds_active'),
-    ('Next', 'next_send', '')
+    ('LCD', 'num_lcds', 'num_lcds_active')
 ]
 
 PI_VERSIONS = {

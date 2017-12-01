@@ -77,6 +77,12 @@ def default_page():
         if parsed_data[each_id]['RPi_revision'] in PI_VERSIONS:
             parsed_data[each_id]['RPi_revision'] = PI_VERSIONS[parsed_data[each_id]['RPi_revision']]
 
+        if 'alembic_version' in parsed_data[each_id]:
+            parsed_data[each_id]['alembic_version'] = parsed_data[each_id]['alembic_version'][:4]
+
+        if 'time' in parsed_data[each_id]:
+            parsed_data[each_id]['time'] = parsed_data[each_id]['time'][:-3]
+
     countries_count = {}
     for each_id, values in parsed_data.items():
         if 'country' in parsed_data[each_id]:
