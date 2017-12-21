@@ -11,16 +11,16 @@
 <a href="/">Home</a>
 Pi 
 {% for series in stats_data_id.series if series.name == 'RPi_revision' %}
-  {% for key, value in series.iteritems() if key == 'values' %}
-    {% for revision, pi_model in pi_versions.iteritems() if revision == value[0][1] %}
+  {% for key, value in series.items() if key == 'values' %}
+    {% for revision, pi_model in pi_versions.items() if revision == value[0][1] %}
       {{pi_model}}
     {% endfor %}
   {% endfor %}
 {% endfor %}
 
 ({%- for series in stats_data_id.series if series.name == 'id' -%}
-  {%- for key, value in series.iteritems() if key == 'values' -%}
-    {%- for id, own_host in own_ids.iteritems() if id == value[0][1] -%}
+  {%- for key, value in series.items() if key == 'values' -%}
+    {%- for id, own_host in own_ids.items() if id == value[0][1] -%}
       {{own_host}}
     {%- else -%}
       {{value[0][1]}}
