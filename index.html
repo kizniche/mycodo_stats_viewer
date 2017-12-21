@@ -50,7 +50,7 @@
       {% endif %}
     {% endfor %}
   </tr>
-  {%- for each_id, each_category in ids.iteritems() -%}
+  {%- for each_id, each_category in ids.items() -%}
   <tr>
     <td>{{loop.index}}</td>
     <td><a href="/id/{{each_id}}">{{parsed_data[each_id]['host']}}</a></td>
@@ -108,7 +108,7 @@
           mapData: Highcharts.maps['custom/world'],
           showInLegend: false,
           data: [
-            {%- for code, value in countries_count.iteritems() -%}
+            {%- for code, value in countries_count.items() -%}
             {
               code: '{{code}}',
               value: {{value}}

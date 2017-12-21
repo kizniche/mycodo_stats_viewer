@@ -1,4 +1,21 @@
 # -*- coding: utf-8 -*-
+#
+#  Create a virtualenv and update pip packages
+#  pip install virtualenv --upgrade
+#  virtualenv --system-site-packages -p python3 ~/mycodo_stats_viewer/env
+#  ~/mycodo_stats_viewer/env/bin/pip3 install --upgrade pip setuptools
+#  ~/mycodo_stats_viewer/env/bin/pip3 install --upgrade -r ~/mycodo_stats_viewer/requirements.txt
+#
+#  Commands to create database on host machine
+#  influx
+#  > CREATE DATABASE mycodo_stats
+#  > CREATE USER "mycodo_stats" WITH PASSWORD 'Io8Nasr5JJDdhPOj32222'
+#  > GRANT WRITE ON "mycodo_stats" TO "mycodo_stats"
+#
+#  Add to cron:
+#  sudo crontab -e
+#  @reboot /home/pi/mycodo_stats_viewer/env/bin/python /home/pi/mycodo_stats_viewer/app.py
+
 import argparse
 import calendar
 import logging
@@ -197,15 +214,19 @@ def get_ids(measurement, time_days):
 
     # Create dictionary of ID (value) and category (value)
     dict_ids = {}
-    for key, value in raw_data.iteritems():
+    for key, value in raw_data.items():
         if value != 0:
             for each_value in value:
                 dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
-    for key, value in sorted(dict_ids.iteritems(), key=lambda (k, v): (v, k)):
+    s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=True)]
+    for key, value in s:
         sorted_dict_ids[key] = value
+
+    # for key, value in sorted(dict_ids.iteritems(), key=lambda (k, v): (v, k)):
+    #     sorted_dict_ids[key] = value
 
     # Reverse sorting (highest to lowest values)
     resorted_dict_ids = OrderedDict(reversed(list(sorted_dict_ids.items())))
