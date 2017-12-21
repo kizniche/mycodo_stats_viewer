@@ -221,7 +221,7 @@ def get_ids(measurement, time_days):
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
-    s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=True)]
+    s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=False)]
     for key, value in s:
         sorted_dict_ids[key] = value
 
