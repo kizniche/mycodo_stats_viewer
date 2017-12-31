@@ -50,7 +50,7 @@ def default_page():
                         parsed_data[each_id][data_name] = '{}'.format(str(value[0][1]))
 
     ids = get_ids(sort_type, timeframe)
-    for each_id, each_category in ids.items():
+    for each_id, _ in ids.items():
         parsed_data[each_id] = {}
         for known_id, own_host in OWN_IDS.items():
             if known_id == each_id:
@@ -84,7 +84,7 @@ def default_page():
             parsed_data[each_id]['time'] = parsed_data[each_id]['time'][:-3]
 
     countries_count = {}
-    for each_id, values in parsed_data.items():
+    for each_id, _ in parsed_data.items():
         if 'country' in parsed_data[each_id]:
             if parsed_data[each_id]['country'] in countries_count:
                 countries_count[parsed_data[each_id]['country']] += 1
