@@ -1,0 +1,15 @@
+[Unit]
+Description=Mycodo Stats Viewer
+After=network.target
+
+[Service]
+User=root
+Group=pi
+WorkingDirectory=/home/pi/mycodo_stats_viewer
+ExecStart=/home/pi/mycodo_stats_viewer/env/bin/python /home/pi/mycodo_stats_viewer/app.py
+
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

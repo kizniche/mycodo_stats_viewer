@@ -1,21 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-#  Create a virtualenv and update pip packages
-#  pip install virtualenv --upgrade
-#  virtualenv --system-site-packages -p python3 ~/mycodo_stats_viewer/env
-#  ~/mycodo_stats_viewer/env/bin/pip3 install --upgrade pip setuptools
-#  ~/mycodo_stats_viewer/env/bin/pip3 install --upgrade -r ~/mycodo_stats_viewer/requirements.txt
-#
-#  Commands to create database on host machine
-#  influx
-#  > CREATE DATABASE mycodo_stats
-#  > CREATE USER "mycodo_stats" WITH PASSWORD 'Io8Nasr5JJDdhPOj32222'
-#  > GRANT WRITE ON "mycodo_stats" TO "mycodo_stats"
-#
-#  Add to cron:
-#  sudo crontab -e
-#  @reboot /home/pi/mycodo_stats_viewer/env/bin/python /home/pi/mycodo_stats_viewer/app.py
-
 import argparse
 import calendar
 import logging
