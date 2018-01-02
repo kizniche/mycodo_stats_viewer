@@ -1,5 +1,13 @@
 /* main style */
 body{
-	background-color:#272B30;
-	color:#999;
+    background-color:#272B30;
+    color: #cbcbcb;
+}
+
+a{
+    color: #00ffa7;
+}
+
+a:visited{
+    color: #00faff;
 }
