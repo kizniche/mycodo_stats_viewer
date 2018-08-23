@@ -82,5 +82,6 @@ PI_VERSIONS = {
     'a21041': '2B',  # Embest
     'a22042': '2B',  # BCM2837
     '2a02082': '3B',  # Embest
-    'a32082': '3 B Jap'  # Japan
+    'a32082': '3BJap',  # Japan
+    '1a22082': '3BUnk'  # Unknown
 }
