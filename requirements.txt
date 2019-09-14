@@ -1,2 +1,2 @@
-Flask
-Flask_Influxdb
+Flask == 1.1.1
+Flask_Influxdb == 0.2
