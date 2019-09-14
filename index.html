@@ -24,8 +24,8 @@
     }
   </style>
   <link rel="stylesheet" href="/static/dark.css">
-  <script src="/static/jquery-3.0.0.min.js"></script>
-  <script src="/static/highmaps.js"></script>
+  <script src="/static/jquery-3.3.1.min.js"></script>
+  <script src="/static/highmaps-7.2.0.js"></script>
   <script src="/static/world.js"></script>
   <script src="/static/dark-unica.js"></script>
 </head>
@@ -38,7 +38,9 @@
 {%- if timeframe == '182' %}6m {% else -%}<a href="javascript:time('182')">6m</a> {% endif -%}
 {%- if timeframe == '30' %}1m {% else -%}<a href="javascript:time('30')">1m</a> {% endif -%}
 {%- if timeframe == '10' %}10d {% else -%}<a href="javascript:time('10')">10d</a> {% endif -%}
-{%- if timeframe == '3' %}3d {% else -%}<a href="javascript:time('3')">3d</a> {% endif -%}
+{%- if timeframe == '3' %}3d, {% else -%}<a href="javascript:time('3')">3d</a>, {% endif -%}
+
+Devices Installed On: {{number_installed_devices}}
 
 <input type="hidden" id="sorttype" name="sorttype" value="{{sort_type}}"/>
 <table style="font-family:Consolas, monospace">

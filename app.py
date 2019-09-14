@@ -49,7 +49,7 @@ def default_page():
                     elif return_type == 'str':
                         parsed_data[each_id][data_name] = '{}'.format(str(value[0][1]))
 
-    ids = get_ids(sort_type, timeframe)
+    ids, number_installed_devices = get_ids(sort_type, timeframe)
     for each_id, _ in ids.items():
         parsed_data[each_id] = {}
         for known_id, own_host in OWN_IDS.items():
@@ -93,6 +93,7 @@ def default_page():
 
     app.logger.info("{name}: Completion time: {time} seconds".format(
       name=__name__, time=timeit.default_timer() - timer))
+
     return render_template('index.html',
                            columns=COLUMNS,
                            timeframe=timeframe,
@@ -100,6 +101,7 @@ def default_page():
                            stats_data=stats_data,
                            ids=ids,
                            countries_count=countries_count,
+                           number_installed_devices=number_installed_devices,
                            own_ids=OWN_IDS,
                            parsed_data=parsed_data,
                            pi_versions=PI_VERSIONS,
@@ -141,6 +143,7 @@ def id_stats(stat_id):
 
     app.logger.info("{name}: Completion time: {time} seconds".format(
       name=__name__, time=timeit.default_timer() - timer))
+
     return render_template('details.html',
                            stats_data_id=stats_data_id,
                            own_ids=OWN_IDS,
@@ -184,6 +187,7 @@ def get_stats_data(time_days):
 
 def get_ids(measurement, time_days):
     """Return a dictionary of user ids sorted based on measurement"""
+    number_installed_devices = 0
     dbcon = influx_db.connection
     raw_data = dbcon.query("""SELECT value
                               FROM {measurement}
@@ -201,6 +205,8 @@ def get_ids(measurement, time_days):
         if value != 0:
             for each_value in value:
                 dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
+                if len(each_value['tags']['anonymous_id']) == 10:
+                    number_installed_devices += 1
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
@@ -214,7 +220,7 @@ def get_ids(measurement, time_days):
     # Reverse sorting (highest to lowest values)
     resorted_dict_ids = OrderedDict(reversed(list(sorted_dict_ids.items())))
 
-    return resorted_dict_ids
+    return resorted_dict_ids, number_installed_devices
 
 
 if __name__ == '__main__':
