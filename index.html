@@ -33,6 +33,7 @@
 
 <form name="sorttypeform" method="post" action="/">
 <input type="hidden" id="timeframe" name="timeframe" value="{{timeframe}}" />
+{%- if timeframe == '99999' %}All {% else -%}<a href="javascript:time('99999')">All</a> {% endif -%}
 {%- if timeframe == '730' %}2y {% else -%}<a href="javascript:time('730')">2y</a> {% endif -%}
 {%- if timeframe == '365' %}1y {% else -%}<a href="javascript:time('365')">1y</a> {% endif -%}
 {%- if timeframe == '182' %}6m {% else -%}<a href="javascript:time('182')">6m</a> {% endif -%}
