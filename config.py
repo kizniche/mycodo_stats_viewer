@@ -39,7 +39,7 @@ COLUMNS = [
     ('In', 'num_sensors', 'num_sensors_active'),
     ('Ma', 'num_maths', 'num_maths_active'),
     ('Con', 'num_conditionals', 'num_conditionals_active'),
-    ('Tim', 'num_timers', 'num_timers_active'),
+    ('Tr', 'num_triggers', 'num_triggers_active'),
     ('Me', 'num_methods', 'num_methods_in_pid'),
     ('PID', 'num_pids', 'num_pids_active'),
     ('LCD', 'num_lcds', 'num_lcds_active')
