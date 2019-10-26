@@ -2,6 +2,7 @@
 
 STATS = [
     ('uptime', 'float', 'Uptime'),
+    ('os_version', 'str', 'OS'),
     ('Mycodo_revision', 'str', 'Mycodo Version'),
     ('alembic_version', 'str', 'Alembic Version'),
     ('RPi_revision', 'str', 'RPi Version'),
@@ -29,6 +30,7 @@ COLUMNS = [
     ('ID', 'id', ''),
     ('Last', 'last', ''),
     ('Up', 'uptime', ''),
+    ('OS', 'os_version', ''),
     ('M.v', 'Mycodo_revision', ''),
     ('A.v', 'alembic_version', ''),
     ('Pi', 'RPi_revision', ''),
