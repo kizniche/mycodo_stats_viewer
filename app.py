@@ -2,6 +2,7 @@
 import argparse
 import calendar
 import logging
+import natsort
 import os
 import time
 import timeit
@@ -12,11 +13,11 @@ from flask import render_template
 from flask import request
 from flask_influxdb import InfluxDB
 
-from secret_variables import INFLUXDB_DATABASE
-from secret_variables import OWN_IDS
 from config import COLUMNS
 from config import PI_VERSIONS
 from config import STATS
+from secret_variables import INFLUXDB_DATABASE
+from secret_variables import OWN_IDS
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
@@ -210,9 +211,18 @@ def get_ids(measurement, time_days):
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
-    s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=False)]
-    for key, value in s:
-        sorted_dict_ids[key] = value
+    if measurement == 'Mycodo_revision':
+        # Sorting version strings (e.g. 7.10.3) doesn't work with sorted()
+        inversed_list = []
+        for each_key, each_value in dict_ids.items():
+            inversed_list.append((each_value, each_key))
+        sorted_list = natsort.natsorted(inversed_list)
+        for each_set in sorted_list:
+            sorted_dict_ids[each_set[1]] = each_set[0]
+    else:
+        s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=False)]
+        for key, value in s:
+            sorted_dict_ids[key] = value
 
     # for key, value in sorted(dict_ids.iteritems(), key=lambda (k, v): (v, k)):
     #     sorted_dict_ids[key] = value

@@ -1,2 +1,3 @@
-Flask == 1.1.1
-Flask_Influxdb == 0.2
+Flask==1.1.1
+Flask_Influxdb==0.2
+natsort
