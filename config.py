@@ -81,9 +81,14 @@ PI_VERSIONS = {
     'a01041': '2B',  # Sony UK
     'a02082': '3B',  # Sony UK
     'a020a0': 'CM3',  # & Lite, Sony UK
+    'a52082': '3B',  # Stadium
     'a21041': '2B',  # Embest
     'a22042': '2B',  # BCM2837
     '2a02082': '3B',  # Embest
     'a32082': '3BJap',  # Japan
-    '1a22082': '3BUnk'  # Unknown
+    '1a22082': '3BUnk',  # Unknown
+    
+    'a03111': '4B',
+    'b03111': '4B',
+    'c03111': '4B',
 }
