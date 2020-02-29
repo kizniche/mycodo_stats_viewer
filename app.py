@@ -2,14 +2,13 @@
 import argparse
 import calendar
 import logging
+import natsort
+import os
 import time
 import timeit
 from collections import OrderedDict
 from datetime import datetime
-
-import os
 from flask import Flask
-from flask import jsonify
 from flask import render_template
 from flask import request
 from flask_influxdb import InfluxDB
@@ -93,9 +92,6 @@ def default_page():
             else:
                 countries_count[parsed_data[each_id]['country']] = 1
 
-    # Get data for chart
-    past_stats_count = past_stats_data_count()
-
     app.logger.info("{name}: Completion time: {time} seconds".format(
       name=__name__, time=timeit.default_timer() - timer))
 
@@ -109,7 +105,6 @@ def default_page():
                            number_installed_devices=number_installed_devices,
                            own_ids=OWN_IDS,
                            parsed_data=parsed_data,
-                           past_stats_count=past_stats_count,
                            pi_versions=PI_VERSIONS,
                            stats=STATS)
 
@@ -166,29 +161,6 @@ def format_datetime(value):
 app.jinja_env.filters['datetime'] = format_datetime
 
 
-def past_stats_data_count():
-    """Return data from past_seconds until present from influxdb"""
-    dbcon = influx_db.connection
-    try:
-        query_str = """SELECT DISTINCT("anonymous_id")
-                       FROM (SELECT value, "anonymous_id" FROM num_relays)
-                       GROUP BY time(7d)
-                    """
-
-        raw_data = dbcon.query(query_str).raw
-
-        dict_day_number_users = {}
-        for each_set in raw_data['series'][0]['values']:
-            if each_set[0] not in dict_day_number_users:
-                dict_day_number_users[each_set[0]] = 0
-            dict_day_number_users[each_set[0]] += 1
-
-        return dict_day_number_users
-
-    except Exception as e:
-        return None
-
-
 def get_stats_data_id(stat_id):
     """Return all statistics data for an id"""
     dbcon = influx_db.connection
@@ -239,9 +211,18 @@ def get_ids(measurement, time_days):
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
-    s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=False)]
-    for key, value in s:
-        sorted_dict_ids[key] = value
+    if measurement == 'Mycodo_revision':
+        # Sorting version strings (e.g. 7.10.3) doesn't work with sorted()
+        inversed_list = []
+        for each_key, each_value in dict_ids.items():
+            inversed_list.append((each_value, each_key))
+        sorted_list = natsort.natsorted(inversed_list)
+        for each_set in sorted_list:
+            sorted_dict_ids[each_set[1]] = each_set[0]
+    else:
+        s = [(k, dict_ids[k]) for k in sorted(dict_ids, key=dict_ids.get, reverse=False)]
+        for key, value in s:
+            sorted_dict_ids[key] = value
 
     # for key, value in sorted(dict_ids.iteritems(), key=lambda (k, v): (v, k)):
     #     sorted_dict_ids[key] = value
