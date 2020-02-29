@@ -2,21 +2,23 @@
 import argparse
 import calendar
 import logging
-import os
 import time
 import timeit
 from collections import OrderedDict
 from datetime import datetime
+
+import os
 from flask import Flask
+from flask import jsonify
 from flask import render_template
 from flask import request
 from flask_influxdb import InfluxDB
 
-from secret_variables import INFLUXDB_DATABASE
-from secret_variables import OWN_IDS
 from config import COLUMNS
 from config import PI_VERSIONS
 from config import STATS
+from secret_variables import INFLUXDB_DATABASE
+from secret_variables import OWN_IDS
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
@@ -91,6 +93,9 @@ def default_page():
             else:
                 countries_count[parsed_data[each_id]['country']] = 1
 
+    # Get data for chart
+    past_stats_count = past_stats_data_count()
+
     app.logger.info("{name}: Completion time: {time} seconds".format(
       name=__name__, time=timeit.default_timer() - timer))
 
@@ -104,6 +109,7 @@ def default_page():
                            number_installed_devices=number_installed_devices,
                            own_ids=OWN_IDS,
                            parsed_data=parsed_data,
+                           past_stats_count=past_stats_count,
                            pi_versions=PI_VERSIONS,
                            stats=STATS)
 
@@ -158,6 +164,29 @@ def format_datetime(value):
     return str(datetime.fromtimestamp(utc_timestamp).strftime('%Y/%m/%d %H:%M'))
 
 app.jinja_env.filters['datetime'] = format_datetime
+
+
+def past_stats_data_count():
+    """Return data from past_seconds until present from influxdb"""
+    dbcon = influx_db.connection
+    try:
+        query_str = """SELECT DISTINCT("anonymous_id")
+                       FROM (SELECT value, "anonymous_id" FROM num_relays)
+                       GROUP BY time(7d)
+                    """
+
+        raw_data = dbcon.query(query_str).raw
+
+        dict_day_number_users = {}
+        for each_set in raw_data['series'][0]['values']:
+            if each_set[0] not in dict_day_number_users:
+                dict_day_number_users[each_set[0]] = 0
+            dict_day_number_users[each_set[0]] += 1
+
+        return dict_day_number_users
+
+    except Exception as e:
+        return None
 
 
 def get_stats_data_id(stat_id):

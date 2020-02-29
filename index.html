@@ -25,7 +25,7 @@
   </style>
   <link rel="stylesheet" href="/static/dark.css">
   <script src="/static/jquery-3.3.1.min.js"></script>
-  <script src="/static/highmaps-7.2.0.js"></script>
+  <script src="/static/highmaps-8.0.0.js"></script>
   <script src="/static/world.js"></script>
   <script src="/static/dark-unica.js"></script>
 </head>
@@ -69,11 +69,54 @@ Devices Installed On: {{number_installed_devices}}
 </table>
 </form>
 
-  <div id="container"></div>
+  <div id="chart_weekly"></div>
+
+  <div id="chart_map"></div>
 
   <script>
     $(function () {
-      $('#container').highcharts('Map', {
+        Highcharts.chart('chart_weekly', {
+        title: {
+          text: null
+        },
+
+        yAxis: {
+            title: {
+                text: 'Number of Weekly Users'
+            }
+        },
+
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+        },
+
+        credits: {
+          enabled: false,
+        },
+
+        xAxis: {
+          type: 'datetime',
+        },
+
+        data: {
+          parseDate: Date.parse
+        },
+
+        series: [{
+            name: 'Users',
+            data: [
+                {% for each_date, each_value in past_stats_count.items() %}["{{each_date[:-10]}}", {{each_value}}],
+                {% endfor %}
+            ].map(function(point) {
+              return [Date.parse(point[0]), point[1]]
+            })
+        }],
+      });
+
+
+      Highcharts.mapChart('chart_map', {
         title: {
           text: null
         },
