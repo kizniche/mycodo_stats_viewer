@@ -146,10 +146,23 @@ def id_stats(stat_id):
         for stat, stat_type, _ in STATS:
             get_values(series, stat, stat_type)
 
+    # Get version history for chart
+    list_versions = []
+    last_version = None
+    for series in stats_data_id['series']:
+        if series["name"] == 'Mycodo_revision':
+            for each_value in series["values"]:
+                if each_value[1] != last_version:
+                    last_version = each_value[1]
+                    list_versions.append([each_value[0].replace("T", " "), each_value[1].split(".")])
+
+    list_versions.reverse()
+
     app.logger.info("{name}: Completion time: {time} seconds".format(
       name=__name__, time=timeit.default_timer() - timer))
 
     return render_template('details.html',
+                           list_versions=list_versions,
                            stats_data_id=stats_data_id,
                            own_ids=OWN_IDS,
                            parsed_data=parsed_data,

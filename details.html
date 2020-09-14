@@ -7,6 +7,10 @@
     }
   </style>
   <link rel="stylesheet" href="/static/dark.css">
+  <script type="text/javascript" src="/static/highstock.js"></script>
+  <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="/static/highmaps-8.0.0.js"></script>
+  <script type="text/javascript" src="/static/dark-unica.js"></script>
 </head>
 <body>
 <a href="/">Home</a>
@@ -45,6 +49,86 @@ Pi
   </tr>
   {% endfor %}
 </table>
+
+<div id="chart_versions"></div>
+
+<script>
+  $(document).ready(function() {
+    new Highcharts.StockChart({
+      chart : {
+        renderTo: 'chart_versions',
+      },
+
+      title: {
+        text: null
+      },
+
+      tooltip: {
+        shared: true,
+        split: false
+      },
+
+      navigator: {
+        enabled: false
+      },
+
+      scrollbar: {
+        enabled: true
+      },
+
+      yAxis: {
+        title: {
+          text: 'Version'
+        }
+      },
+
+      credits: {
+        enabled: false,
+      },
+
+      xAxis: {
+        type: 'datetime',
+      },
+
+      data: {
+        parseDate: Date.parse
+      },
+
+      series: [
+        {
+          name: 'Major',
+          data: [
+          {% for each_version in list_versions %}
+            ["{{each_version[0][:-11]}}", {{each_version[1][0]}}],
+          {% endfor %}
+          ].map(function(point) {
+            return [Date.parse(point[0]), point[1]]
+          })
+        },
+        {
+          name: 'Minor',
+          data: [
+          {% for each_version in list_versions %}
+            ["{{each_version[0][:-11]}}", {{each_version[1][1]}}],
+          {% endfor %}
+          ].map(function(point) {
+            return [Date.parse(point[0]), point[1]]
+          })
+        },
+        {
+          name: 'Revision',
+          data: [
+          {% for each_version in list_versions %}
+            ["{{each_version[0][:-11]}}", {{each_version[1][2]}}],
+          {% endfor %}
+          ].map(function(point) {
+            return [Date.parse(point[0]), point[1]]
+          })
+        },
+      ]
+    });
+  });
+  </script>
 
 </body>
 </html>
