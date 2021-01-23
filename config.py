@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+VERSION = "1.0.0"
+
 STATS = [
     ('uptime', 'float', 'Uptime'),
     ('os_version', 'str', 'OS'),

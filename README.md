@@ -1,5 +1,7 @@
 ## Mycodo Statistics Viewer
 
+Version: 1.0.0
+
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1ee7570c9e834104bf399e5064f0e0fc)](https://www.codacy.com/app/Mycodo/mycodo_stats_viewer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kizniche/mycodo_stats_viewer&amp;utm_campaign=Badge_Grade)
 
 #### [Mycodo Repository](https://github.com/kizniche/Mycodo)

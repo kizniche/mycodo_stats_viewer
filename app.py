@@ -1,21 +1,31 @@
 # -*- coding: utf-8 -*-
 import argparse
 import calendar
+import grp
 import logging
-import natsort
-import os
+import pwd
+import socket
+import subprocess
 import time
 import timeit
+import zipfile
 from collections import OrderedDict
 from datetime import datetime
+
+import io
+import natsort
+import os
+import shutil
 from flask import Flask
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask_influxdb import InfluxDB
 
 from config import COLUMNS
 from config import PI_VERSIONS
 from config import STATS
+from config import VERSION
 from secret_variables import INFLUXDB_DATABASE
 from secret_variables import OWN_IDS
 
@@ -168,6 +178,74 @@ def id_stats(stat_id):
                            parsed_data=parsed_data,
                            pi_versions=PI_VERSIONS,
                            stats=STATS)
+
+
+@app.route('/export', methods=('GET', 'POST'))
+def export():
+    influx_backup_dir = '/tmp/influx_backup'
+
+    # Delete (if it exists) and create influxdb directory to make sure it's empty
+    if os.path.isdir(influx_backup_dir):
+        shutil.rmtree(influx_backup_dir)
+    assure_path_exists(influx_backup_dir)
+
+    cmd = "/usr/bin/influxd backup -database {db} -portable {path}".format(
+        db=INFLUXDB_DATABASE, path=influx_backup_dir)
+    _, _, status = cmd_output(cmd)
+
+    influxd_version_out, _, _ = cmd_output('/usr/bin/influxd version')
+    if influxd_version_out:
+        influxd_version = influxd_version_out.decode('utf-8').split(' ')[1]
+    else:
+        influxd_version = None
+        app.logger.error("Could not determine Influxdb version")
+
+    if not status and influxd_version:
+        # Zip all files in the influx_backup directory
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, mode='w') as z:
+            for _, _, files in os.walk(influx_backup_dir):
+                for filename in files:
+                    z.write(os.path.join(influx_backup_dir, filename), filename)
+        data.seek(0)
+
+        # Delete influxdb directory if it exists
+        if os.path.isdir(influx_backup_dir):
+            shutil.rmtree(influx_backup_dir)
+
+        # Send zip file to user
+        return send_file(
+            data,
+            mimetype='application/zip',
+            as_attachment=True,
+            attachment_filename='Mycodo_Stats_{dt}_Ver_{mv}_Influxdb_{iv}_{host}.zip'.format(
+                mv=VERSION, iv=influxd_version,
+                host=socket.gethostname().replace(' ', ''),
+                dt=datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        )
+
+
+def cmd_output(command):
+    cmd = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    cmd_out, cmd_err = cmd.communicate()
+    cmd_status = cmd.wait()
+    return cmd_out, cmd_err, cmd_status
+
+
+def set_user_grp(filepath, user, group):
+    """ Set the UID and GUID of a file """
+    uid = pwd.getpwnam(user).pw_uid
+    gid = grp.getgrnam(group).gr_gid
+    os.chown(filepath, uid, gid)
+
+
+def assure_path_exists(path):
+    """ Create path if it doesn't exist """
+    if not os.path.exists(path):
+        os.makedirs(path)
+        os.chmod(path, 0o774)
+        set_user_grp(path, 'pi', 'pi')
+    return path
 
 
 def format_datetime(value):
