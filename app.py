@@ -6,12 +6,13 @@ import logging
 import pwd
 import socket
 import subprocess
+import threading
 import time
 import timeit
 import zipfile
 from collections import OrderedDict
 from datetime import datetime
-
+from influxdb import InfluxDBClient
 import io
 import natsort
 import os
@@ -223,6 +224,134 @@ def export():
                 host=socket.gethostname().replace(' ', ''),
                 dt=datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
         )
+
+
+@app.route('/import', methods=('GET', 'POST'))
+def page_import():
+    status = []
+
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            status.append('No file part')
+        elif request.files['file'] == '':
+            status.append('No selected file')
+        else:
+            restore_influxdb = import_influxdb(request)
+            if restore_influxdb == 'success':
+                status.append(
+                    'The influxdb database import has been initialized. '
+                    'This process may take an extended time to complete '
+                    'if there is a lot of data. Please allow ample time '
+                    'for it to complete.')
+            else:
+                status.append(
+                    'Errors occurred during the influxdb database import.')
+
+    return render_template('import.html',
+                           status=status)
+
+
+def thread_import_influxdb(tmp_folder):
+    mycodo_db_backup = 'mycodo_stats_db_bak'
+    dbcon = influx_db.connection
+
+    # Delete any backup database that may exist (can't copy over a current db)
+    dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
+
+    # Restore the backup to new database mycodo_db_bak
+    try:
+        logging.info("Creating tmp db with restore data")
+        command = "influxd restore -portable -db mycodo_db -newdb mycodo_db_bak {dir}".format(dir=tmp_folder)
+        cmd = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            shell=True)
+        cmd_out, cmd_err = cmd.communicate()
+        cmd_status = cmd.wait()
+        logging.info("command output: {}\nErrors: {}\nStatus: {}".format(
+            cmd_out.decode('utf-8'), cmd_err, cmd_status))
+    except Exception as msg:
+        logging.info("Error during restore of data to backup db: {}".format(msg))
+
+    # Copy all measurements from backup to current database
+    try:
+        logging.info("Beginning restore of data from tmp db to main db. This could take a while...")
+        dbcon.query("""SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *""")
+
+        logging.info("Restore of data from tmp db complete.")
+    except Exception as msg:
+        logging.info("Error during copy of measurements from backup db to production db: {}".format(msg))
+
+    # Delete backup database
+    try:
+        logging.info("Deleting tmp db")
+        dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
+    except Exception as msg:
+        logging.info("Error while deleting db after restore: {}".format(msg))
+
+    # Delete tmp directory if it exists
+    try:
+        logging.info("Deleting influxdb restore tmp directory...")
+        shutil.rmtree(tmp_folder)
+    except Exception as msg:
+        logging.info("Error while deleting tmp file directory: {}".format(msg))
+
+
+def import_influxdb(form_request):
+    """
+    Receive a zip file containing influx metastore and database that was
+    exported with export_influxdb(), then import the metastore and database
+    in InfluxDB.
+    """
+    error = []
+
+    try:
+        tmp_folder = os.path.join('/tmp', 'mycodo_influx_tmp')
+        full_path = None
+
+        # Save file to upload directory
+        filename = form_request.files['file'].filename
+        full_path = os.path.join(tmp_folder, filename)
+        assure_path_exists(tmp_folder)
+        form_request.files['file'].save(os.path.join(tmp_folder, filename))
+
+        # Check if contents of zip file are correct
+        try:
+            file_list = zipfile.ZipFile(full_path, 'r').namelist()
+            if not any(".meta" in s for s in file_list):
+                error.append("No '.meta' file found in archive")
+            elif not any(".manifest" in s for s in file_list):
+                error.append("No '.manifest' file found in archive")
+        except Exception as err:
+            error.append("Exception while opening zip file: "
+                         "{err}".format(err=err))
+
+        if not error:
+            # Unzip file
+            try:
+                zip_ref = zipfile.ZipFile(full_path, 'r')
+                zip_ref.extractall(tmp_folder)
+                zip_ref.close()
+            except Exception as err:
+                error.append("Exception while extracting zip file: "
+                             "{err}".format(err=err))
+
+        if not error:
+            try:
+                import_settings_db = threading.Thread(
+                    target=thread_import_influxdb,
+                    args=(tmp_folder,))
+                import_settings_db.start()
+                return "success"
+            except Exception as err:
+                error.append("Exception while importing database: "
+                             "{err}".format(err=err))
+                return 'error'
+
+    except Exception as err:
+        error.append("Exception: {}".format(err))
+
+    flash_success_errors(error, action, url_for('routes_page.page_export'))
 
 
 def cmd_output(command):

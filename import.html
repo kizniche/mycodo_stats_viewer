@@ -1,0 +1,14 @@
+<html>
+<head>
+  <title>Import Influx DB</title>
+</head>
+<body>
+{% if status %}
+  <p>Status: {{status}}</p>
+{% endif %}
+  <form method=post enctype=multipart/form-data>
+    <input type=file name=file>
+    <input type=submit value=Upload>
+  </form>
+</body>
+</html>
