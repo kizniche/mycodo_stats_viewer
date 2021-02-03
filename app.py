@@ -256,7 +256,6 @@ def page_import():
 
 
 def thread_import_influxdb(tmp_folder):
-    app.logger.info("TEST00")
     mycodo_db_backup = 'mycodo_stats_db_bak'
     # dbcon = influx_db.connection
     client = InfluxDBClient(
@@ -277,6 +276,7 @@ def thread_import_influxdb(tmp_folder):
     try:
         app.logger.info("Creating tmp db with restore data")
         command = "influxd restore -portable -db mycodo_db -newdb mycodo_db_bak {dir}".format(dir=tmp_folder)
+        app.logger.info("executing '{}'".format(command))
         cmd = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
