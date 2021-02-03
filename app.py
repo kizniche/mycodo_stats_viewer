@@ -32,6 +32,8 @@ from secret_variables import OWN_IDS
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__, template_folder=tmpl_dir)
 influx_db = InfluxDB(app)
 
@@ -252,6 +254,7 @@ def page_import():
 
 
 def thread_import_influxdb(tmp_folder):
+    logger.info("TEST00")
     mycodo_db_backup = 'mycodo_stats_db_bak'
     # dbcon = influx_db.connection
     client = InfluxDBClient(
@@ -362,8 +365,6 @@ def import_influxdb(form_request):
 
     except Exception as err:
         error.append("Exception: {}".format(err))
-
-    flash_success_errors(error, action, url_for('routes_page.page_export'))
 
 
 def cmd_output(command):
