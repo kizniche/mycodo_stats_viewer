@@ -6,7 +6,7 @@ After=network.target
 User=root
 Group=pi
 WorkingDirectory=/home/pi/mycodo_stats_viewer
-ExecStart=/home/pi/mycodo_stats_viewer/env/bin/gunicorn --bind 0.0.0.0:5000 app:app
+ExecStart=/home/pi/mycodo_stats_viewer/env/bin/gunicorn --bind 0.0.0.0:5000 --log-level=info app:app
 
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
