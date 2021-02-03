@@ -35,9 +35,9 @@ tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__, template_folder=tmpl_dir)
 influx_db = InfluxDB(app)
 
-ms_logger = logging.getLogger('mycodo_stats')
-app.logger.handlers = ms_logger.handlers
-app.logger.setLevel(logging.DEBUG)
+gunicorn_logger = logging.getLogger('gunicorn.error')
+app.logger.handlers = gunicorn_logger.handlers
+app.logger.setLevel(gunicorn_logger.level)
 
 app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
 
