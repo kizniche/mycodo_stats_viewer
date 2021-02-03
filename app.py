@@ -256,6 +256,7 @@ def page_import():
 
 
 def thread_import_influxdb(tmp_folder):
+    mycodo_db = 'mycodo_stats'
     mycodo_db_backup = 'mycodo_stats_db_bak'
     # dbcon = influx_db.connection
     client = InfluxDBClient(
@@ -275,7 +276,8 @@ def thread_import_influxdb(tmp_folder):
     # Restore the backup to new database mycodo_db_bak
     try:
         app.logger.info("Creating tmp db with restore data")
-        command = "influxd restore -portable -db mycodo_db -newdb mycodo_db_bak {dir}".format(dir=tmp_folder)
+        command = "influxd restore -portable -db {db} -newdb {dbn} {dir}".format(
+            db=mycodo_db, dbn=mycodo_db_backup, dir=tmp_folder)
         app.logger.info("executing '{}'".format(command))
         cmd = subprocess.Popen(
             command,
@@ -292,7 +294,7 @@ def thread_import_influxdb(tmp_folder):
     try:
         app.logger.info("Beginning restore of data from tmp db to main db. This could take a while...")
         # dbcon.query("""SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *""")
-        query_str = "SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *"
+        query_str = "SELECT * INTO {}..:MEASUREMENT FROM /.*/ GROUP BY *".format(mycodo_db)
         client.query(query_str)
         app.logger.info("Restore of data from tmp db complete.")
     except Exception as msg:
