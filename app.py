@@ -32,8 +32,6 @@ from secret_variables import OWN_IDS
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
-logger = logging.getLogger(__name__)
-
 app = Flask(__name__, template_folder=tmpl_dir)
 influx_db = InfluxDB(app)
 
@@ -254,7 +252,7 @@ def page_import():
 
 
 def thread_import_influxdb(tmp_folder):
-    logger.info("TEST00")
+    app.logger.info("TEST00")
     mycodo_db_backup = 'mycodo_stats_db_bak'
     # dbcon = influx_db.connection
     client = InfluxDBClient(
@@ -269,11 +267,11 @@ def thread_import_influxdb(tmp_folder):
     try:
         client.drop_database(mycodo_db_backup)
     except Exception as msg:
-        print("Error while deleting db prior to restore: {}".format(msg))
+        app.logger.error("Error while deleting db prior to restore: {}".format(msg))
 
     # Restore the backup to new database mycodo_db_bak
     try:
-        logging.info("Creating tmp db with restore data")
+        app.logger.info("Creating tmp db with restore data")
         command = "influxd restore -portable -db mycodo_db -newdb mycodo_db_bak {dir}".format(dir=tmp_folder)
         cmd = subprocess.Popen(
             command,
@@ -281,35 +279,35 @@ def thread_import_influxdb(tmp_folder):
             shell=True)
         cmd_out, cmd_err = cmd.communicate()
         cmd_status = cmd.wait()
-        logging.info("command output: {}\nErrors: {}\nStatus: {}".format(
+        app.logger.info("command output: {}\nErrors: {}\nStatus: {}".format(
             cmd_out.decode('utf-8'), cmd_err, cmd_status))
     except Exception as msg:
-        logging.info("Error during restore of data to backup db: {}".format(msg))
+        app.logger.info("Error during restore of data to backup db: {}".format(msg))
 
     # Copy all measurements from backup to current database
     try:
-        logging.info("Beginning restore of data from tmp db to main db. This could take a while...")
+        app.logger.info("Beginning restore of data from tmp db to main db. This could take a while...")
         # dbcon.query("""SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *""")
         query_str = "SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *"
         client.query(query_str)
-        logging.info("Restore of data from tmp db complete.")
+        app.logger.info("Restore of data from tmp db complete.")
     except Exception as msg:
-        logging.info("Error during copy of measurements from backup db to production db: {}".format(msg))
+        app.logger.info("Error during copy of measurements from backup db to production db: {}".format(msg))
 
     # Delete backup database
     try:
-        logging.info("Deleting tmp db")
+        app.logger.info("Deleting tmp db")
         # dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
         client.drop_database(mycodo_db_backup)
     except Exception as msg:
-        logging.info("Error while deleting db after restore: {}".format(msg))
+        app.logger.info("Error while deleting db after restore: {}".format(msg))
 
     # Delete tmp directory if it exists
     try:
-        logging.info("Deleting influxdb restore tmp directory...")
+        app.logger.info("Deleting influxdb restore tmp directory...")
         shutil.rmtree(tmp_folder)
     except Exception as msg:
-        logging.info("Error while deleting tmp file directory: {}".format(msg))
+        app.logger.info("Error while deleting tmp file directory: {}".format(msg))
 
 
 def import_influxdb(form_request):
