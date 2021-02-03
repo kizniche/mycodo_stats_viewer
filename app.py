@@ -37,7 +37,7 @@ influx_db = InfluxDB(app)
 
 ms_logger = logging.getLogger('mycodo_stats')
 app.logger.handlers = ms_logger.handlers
-app.logger.setLevel(ms_logger.level)
+app.logger.setLevel(logging.DEBUG)
 
 app.config['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
 
