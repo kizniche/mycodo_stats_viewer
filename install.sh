@@ -22,7 +22,7 @@
 
 INSTALL_DIRECTORY=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )
 
-pip install virtualenv --upgrade
+pip3 install virtualenv --upgrade
 virtualenv --system-site-packages -p python3 "${INSTALL_DIRECTORY}"/env
 "${INSTALL_DIRECTORY}"/env/bin/pip3 install --upgrade pip setuptools
 "${INSTALL_DIRECTORY}"/env/bin/pip3 install --upgrade -r "${INSTALL_DIRECTORY}"/requirements.txt

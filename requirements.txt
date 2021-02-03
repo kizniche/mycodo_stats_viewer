@@ -1,4 +1,5 @@
-Flask==1.1.1
-Flask_Influxdb==0.2
+Flask==1.1.2
+Flask_Influxdb==0.3.3
 gunicorn==20.0.4
-natsort
+influxdb==5.3.1
+natsort==7.1.1

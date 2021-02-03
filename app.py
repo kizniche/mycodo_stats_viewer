@@ -253,10 +253,20 @@ def page_import():
 
 def thread_import_influxdb(tmp_folder):
     mycodo_db_backup = 'mycodo_stats_db_bak'
-    dbcon = influx_db.connection
+    # dbcon = influx_db.connection
+    client = InfluxDBClient(
+        'localhost',
+        '8086',
+        'root',
+        'root',
+        mycodo_db_backup)
 
     # Delete any backup database that may exist (can't copy over a current db)
-    dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
+    # dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
+    try:
+        client.drop_database(mycodo_db_backup)
+    except Exception as msg:
+        print("Error while deleting db prior to restore: {}".format(msg))
 
     # Restore the backup to new database mycodo_db_bak
     try:
@@ -276,8 +286,9 @@ def thread_import_influxdb(tmp_folder):
     # Copy all measurements from backup to current database
     try:
         logging.info("Beginning restore of data from tmp db to main db. This could take a while...")
-        dbcon.query("""SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *""")
-
+        # dbcon.query("""SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *""")
+        query_str = "SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *"
+        client.query(query_str)
         logging.info("Restore of data from tmp db complete.")
     except Exception as msg:
         logging.info("Error during copy of measurements from backup db to production db: {}".format(msg))
@@ -285,7 +296,8 @@ def thread_import_influxdb(tmp_folder):
     # Delete backup database
     try:
         logging.info("Deleting tmp db")
-        dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
+        # dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
+        client.drop_database(mycodo_db_backup)
     except Exception as msg:
         logging.info("Error while deleting db after restore: {}".format(msg))
 
