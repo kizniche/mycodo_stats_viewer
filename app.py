@@ -311,7 +311,7 @@ def thread_import_influxdb(tmp_folder):
     # Delete tmp directory if it exists
     try:
         app.logger.info("Deleting influxdb restore tmp directory...")
-        shutil.rmtree(tmp_folder)
+        #shutil.rmtree(tmp_folder)
     except Exception as msg:
         app.logger.info("Error while deleting tmp file directory: {}".format(msg))
 
@@ -365,10 +365,12 @@ def import_influxdb(form_request):
             except Exception as err:
                 error.append("Exception while importing database: "
                              "{err}".format(err=err))
-                return 'error'
 
     except Exception as err:
         error.append("Exception: {}".format(err))
+
+    if error:
+        app.logger.error(error)
 
 
 def cmd_output(command):
