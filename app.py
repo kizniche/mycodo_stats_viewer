@@ -51,8 +51,12 @@ def default_page():
         sort_type = request.form['sorttype']
         timeframe = request.form['timeframe']
 
+    app.logger.debug("0: {} sec".format(timeit.default_timer() - timer))
+
     stats_data = get_stats_data(timeframe)
     parsed_data = {}
+
+    app.logger.debug("1: {} sec".format(timeit.default_timer() - timer))
 
     def get_value(data_input, data_name, return_type):
         if data_input['name'] == data_name:
@@ -65,14 +69,17 @@ def default_page():
                     elif return_type == 'str':
                         parsed_data[each_id][data_name] = '{}'.format(str(value[0][1]))
 
-    ids, number_installed_devices = get_ids(sort_type, timeframe)
-    for each_id, _ in ids.items():
+    app.logger.debug("2: {} sec".format(timeit.default_timer() - timer))
+
+    ids, number_installed_devices = get_ids(stats_data, sort_type, timeframe)
+
+    app.logger.debug("3: {} sec".format(timeit.default_timer() - timer))
+
+    for each_id in ids:
         parsed_data[each_id] = {}
-        for known_id, own_host in OWN_IDS.items():
-            if known_id == each_id:
-                parsed_data[each_id]['host'] = own_host
-                break
-        if 'host' not in parsed_data[each_id]:
+        if each_id in OWN_IDS:
+            parsed_data[each_id]['host'] = OWN_IDS[each_id]
+        else:
             parsed_data[each_id]['host'] = each_id
 
         for series in stats_data['series']:
@@ -99,19 +106,22 @@ def default_page():
         if 'time' in parsed_data[each_id]:
             parsed_data[each_id]['time'] = parsed_data[each_id]['time'][:-3]
 
+    app.logger.debug("4: {} sec".format(timeit.default_timer() - timer))
+
     countries_count = {}
-    for each_id, _ in parsed_data.items():
+    for each_id in parsed_data:
         if 'country' in parsed_data[each_id]:
             if parsed_data[each_id]['country'] in countries_count:
                 countries_count[parsed_data[each_id]['country']] += 1
             else:
                 countries_count[parsed_data[each_id]['country']] = 1
 
+    app.logger.debug("5: {} sec".format(timeit.default_timer() - timer))
+
     # Get data for chart
     past_stats_count = past_stats_data_count()
 
-    app.logger.info("{name}: Completion time: {time} seconds".format(
-      name=__name__, time=timeit.default_timer() - timer))
+    app.logger.debug("6: {} sec".format(timeit.default_timer() - timer))
 
     return render_template('index.html',
                            columns=COLUMNS,
@@ -452,28 +462,20 @@ def get_stats_data(time_days):
     return raw_data
 
 
-def get_ids(measurement, time_days):
+def get_ids(data, measurement, time_days):
     """Return a dictionary of user ids sorted based on measurement"""
     number_installed_devices = 0
-    dbcon = influx_db.connection
-    raw_data = dbcon.query("""SELECT value
-                              FROM {measurement}
-                              WHERE time > now() - {time}d
-                              GROUP BY *
-                              ORDER BY time DESC
-                              LIMIT 1
-                           """.format(measurement=measurement,
-                                      time=time_days)
-                           ).raw
 
     # Create dictionary of ID (value) and category (value)
     dict_ids = {}
-    for key, value in raw_data.items():
-        if value != 0:
-            for each_value in value:
-                dict_ids[each_value['tags']['anonymous_id']] = each_value['values'][0][1]
-                if len(each_value['tags']['anonymous_id']) == 10:
-                    number_installed_devices += 1
+    for each_data in data['series']:
+        if each_data['name'] == measurement:
+            try:  # Turn to float if string represents numerical value
+                dict_ids[each_data['tags']['anonymous_id']] = float(each_data['values'][0][1])
+            except:
+                dict_ids[each_data['tags']['anonymous_id']] = each_data['values'][0][1]
+            if len(each_data['tags']['anonymous_id']) == 10:
+                number_installed_devices += 1
 
     # Sort lowest to highest by values (measurement)
     sorted_dict_ids = OrderedDict()
