@@ -22,6 +22,8 @@
 
 INSTALL_DIRECTORY=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )
 
+apt python3-pip install influxdb influxdb-client
+
 pip3 install virtualenv --upgrade
 virtualenv --system-site-packages -p python3 "${INSTALL_DIRECTORY}"/env
 "${INSTALL_DIRECTORY}"/env/bin/pip3 install --upgrade pip setuptools
