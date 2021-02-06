@@ -6,6 +6,7 @@
 {% if status %}
   <p>Status: {{status}}</p>
 {% endif %}
+<p>Ensure the database versions are very similar (e.g. backup of v1.8.0 restored into v1.8.1).</p>
   <form method=post enctype=multipart/form-data>
     <input type=file name=file>
     <input type=submit value=Upload>

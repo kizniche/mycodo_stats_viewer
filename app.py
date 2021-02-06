@@ -268,7 +268,6 @@ def page_import():
 def thread_import_influxdb(tmp_folder):
     mycodo_db = 'mycodo_stats'
     mycodo_db_backup = 'mycodo_stats_db_bak'
-    # dbcon = influx_db.connection
     client = InfluxDBClient(
         'localhost',
         '8086',
@@ -277,7 +276,6 @@ def thread_import_influxdb(tmp_folder):
         mycodo_db_backup)
 
     # Delete any backup database that may exist (can't copy over a current db)
-    # dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
     try:
         client.drop_database(mycodo_db_backup)
     except Exception as msg:
@@ -303,7 +301,6 @@ def thread_import_influxdb(tmp_folder):
     # Copy all measurements from backup to current database
     try:
         app.logger.info("Beginning restore of data from tmp db to main db. This could take a while...")
-        # dbcon.query("""SELECT * INTO mycodo_stats..:MEASUREMENT FROM /.*/ GROUP BY *""")
         query_str = "SELECT * INTO {}..:MEASUREMENT FROM /.*/ GROUP BY *".format(mycodo_db)
         client.query(query_str)
         app.logger.info("Restore of data from tmp db complete.")
@@ -313,7 +310,6 @@ def thread_import_influxdb(tmp_folder):
     # Delete backup database
     try:
         app.logger.info("Deleting tmp db")
-        # dbcon.query('DROP DATABASE "{}"'.format(mycodo_db_backup))
         client.drop_database(mycodo_db_backup)
     except Exception as msg:
         app.logger.info("Error while deleting db after restore: {}".format(msg))
@@ -321,7 +317,7 @@ def thread_import_influxdb(tmp_folder):
     # Delete tmp directory if it exists
     try:
         app.logger.info("Deleting influxdb restore tmp directory...")
-        #shutil.rmtree(tmp_folder)
+        shutil.rmtree(tmp_folder)
     except Exception as msg:
         app.logger.info("Error while deleting tmp file directory: {}".format(msg))
 

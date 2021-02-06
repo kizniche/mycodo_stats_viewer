@@ -22,7 +22,11 @@
 
 INSTALL_DIRECTORY=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )
 
-apt python3-pip install influxdb influxdb-client
+apt install python3-pip
+
+wget https://dl.influxdata.com/influxdb/releases/influxdb_1.8.0_armhf.deb
+dpkg -i ./influxdb_1.8.0_armhf.deb
+rm -rf ./influxdb_1.8.0_armhf.deb
 
 pip3 install virtualenv --upgrade
 virtualenv --system-site-packages -p python3 "${INSTALL_DIRECTORY}"/env
