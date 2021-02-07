@@ -116,7 +116,6 @@ def default_page():
     }
 
     countries_count = copy.deepcopy(countries)
-    # app.logger.error(countries_count)
 
     for each_id in parsed_data:
         if 'country' in parsed_data[each_id]:
@@ -127,9 +126,6 @@ def default_page():
 
             if country not in countries_count:
                 countries_count[str(country)] = {}
-                app.logger.error("TEST00: {}".format(country))
-            else:
-                app.logger.error("TEST01: {}, {}".format(country, countries_count[country]))
 
             if "count" in countries_count[country]:
                 countries_count[country]["count"] += 1
