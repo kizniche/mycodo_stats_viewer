@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import argparse
 import calendar
+import copy
 import grp
+import io
 import logging
+import os
 import pwd
+import shutil
 import socket
 import subprocess
 import threading
@@ -12,21 +16,20 @@ import timeit
 import zipfile
 from collections import OrderedDict
 from datetime import datetime
-from influxdb import InfluxDBClient
-import io
+
 import natsort
-import os
-import shutil
 from flask import Flask
 from flask import render_template
 from flask import request
 from flask import send_file
 from flask_influxdb import InfluxDB
+from influxdb import InfluxDBClient
 
 from config import COLUMNS
 from config import PI_VERSIONS
 from config import STATS
 from config import VERSION
+from config import countries
 from secret_variables import INFLUXDB_DATABASE
 from secret_variables import OWN_IDS
 
@@ -108,13 +111,30 @@ def default_page():
 
     app.logger.debug("4: {} sec".format(timeit.default_timer() - timer))
 
-    countries_count = {}
+    country_convert = {
+        "HK": "CN"
+    }
+
+    countries_count = copy.deepcopy(countries)
+    # app.logger.error(countries_count)
+
     for each_id in parsed_data:
         if 'country' in parsed_data[each_id]:
-            if parsed_data[each_id]['country'] in countries_count:
-                countries_count[parsed_data[each_id]['country']] += 1
+            if parsed_data[each_id]['country'] in country_convert:
+                country = country_convert[parsed_data[each_id]['country']]
             else:
-                countries_count[parsed_data[each_id]['country']] = 1
+                country = str(parsed_data[each_id]['country'])
+
+            if country not in countries_count:
+                countries_count[str(country)] = {}
+                app.logger.error("TEST00: {}".format(country))
+            else:
+                app.logger.error("TEST01: {}, {}".format(country, countries_count[country]))
+
+            if "count" in countries_count[country]:
+                countries_count[country]["count"] += 1
+            else:
+                countries_count[country]["count"] = 1
 
     app.logger.debug("5: {} sec".format(timeit.default_timer() - timer))
 
