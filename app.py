@@ -125,7 +125,7 @@ def default_page():
                 country = str(parsed_data[each_id]['country'])
 
             if country not in countries_count:
-                countries_count[str(country)] = {}
+                countries_count[str(country)] = {"name": country}
 
             if "count" in countries_count[country]:
                 countries_count[country]["count"] += 1
