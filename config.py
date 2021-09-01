@@ -80,16 +80,20 @@ PI_VERSIONS = {
     '900093': 'Zero',  # Sony UK
     '9000c1': 'ZeroW',  # Sony UK
     '920093': 'Zero',  # Embest
+    '9020e0': '3A+',  # Sony UK
     'a01040': '2B',  # Sony UK
     'a01041': '2B',  # Sony UK
+
     'a02082': '3B',  # Sony UK
     'a020a0': 'CM3',  # & Lite, Sony UK
     'a52082': '3B',  # Stadium
     'a21041': '2B',  # Embest
     'a22042': '2B',  # BCM2837
+    '2a21041': '2B 1.1',
     '2a02082': '3B',  # Embest
     'a32082': '3BJap',  # Japan
     '1a22082': '3BUnk',  # Unknown
+    '2a020d3': '3B+',
     
     'a03111': '4B 1.1 1GB',
     'b03111': '4B 1.1 2GB',
@@ -97,6 +101,9 @@ PI_VERSIONS = {
     'a03112': '4B 1.2 1GB',
     'b03112': '4B 1.2 2GB',
     'c03112': '4B 1.2 4GB',
+    'b03114': '4B 1.4 2GB',
+    'c03114': '4B 1.4 4GB',
+    'd03114': '4B 1.4 8GB'
 }
 
 countries = OrderedDict([
