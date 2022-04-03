@@ -23,7 +23,10 @@ STATS = [
     ('num_methods_in_pid', 'int', 'Methods in PIDs'),
     ('num_methods', 'int', 'Mthods'),
     ('num_pids_active', 'int', 'PIDs Active'),
-    ('num_pids', 'int', 'PIDs')
+    ('num_pids', 'int', 'PIDs'),
+    ('num_functions_active', 'int', 'Functions Active'),
+    ('num_functions', 'int', 'Functions'),
+    ('num_actions', 'int', 'Actions'),
 ]
 
 COLUMNS = [
@@ -44,6 +47,8 @@ COLUMNS = [
     ('Tr', 'num_triggers', 'num_triggers_active'),
     ('Me', 'num_methods', 'num_methods_in_pid'),
     ('PID', 'num_pids', 'num_pids_active'),
+    ('Func', 'num_functions', 'num_functions_active'),
+    ('Act', 'num_actions', ''),
 ]
 
 PI_VERSIONS = {
