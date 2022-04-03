@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 STATS = [
     ('uptime', 'float', 'Uptime'),
@@ -9,14 +9,13 @@ STATS = [
     ('Mycodo_revision', 'str', 'Mycodo Version'),
     ('alembic_version', 'str', 'Alembic Version'),
     ('RPi_revision', 'str', 'RPi Version'),
+    ('master_branch', 'bool', 'Master Branch'),
     ('country', 'str', 'Country'),
     ('daemon_startup_seconds', 'float', 'Startup Seconds'),
     ('ram_use_mb', 'float', 'Ram Use'),
     ('num_relays', 'int', 'Number of Outputs'),
     ('num_sensors_active', 'int', 'Inputs Active'),
     ('num_sensors', 'int', 'Inputs'),
-    ('num_maths_active', 'int', 'Maths Active'),
-    ('num_maths', 'int', 'Maths'),
     ('num_conditionals_active', 'int', 'Conditionals Active'),
     ('num_conditionals', 'int', 'Conditionals'),
     ('num_triggers_active', 'int', 'Triggers Active'),
@@ -24,9 +23,7 @@ STATS = [
     ('num_methods_in_pid', 'int', 'Methods in PIDs'),
     ('num_methods', 'int', 'Mthods'),
     ('num_pids_active', 'int', 'PIDs Active'),
-    ('num_pids', 'int', 'PIDs'),
-    ('num_lcds_active', 'int', 'LCDs Active'),
-    ('num_lcds', 'int', 'LCDs')
+    ('num_pids', 'int', 'PIDs')
 ]
 
 COLUMNS = [
@@ -35,6 +32,7 @@ COLUMNS = [
     ('Up', 'uptime', ''),
     ('OS', 'os_version', ''),
     ('M.v', 'Mycodo_revision', ''),
+    ('Mas', 'master_branch', ''),
     ('A.v', 'alembic_version', ''),
     ('Pi', 'RPi_revision', ''),
     ('Loc', 'country', ''),
@@ -42,12 +40,10 @@ COLUMNS = [
     ('RAM', 'ram_use_mb', ''),
     ('Out', 'num_relays', ''),
     ('In', 'num_sensors', 'num_sensors_active'),
-    ('Ma', 'num_maths', 'num_maths_active'),
     ('Con', 'num_conditionals', 'num_conditionals_active'),
     ('Tr', 'num_triggers', 'num_triggers_active'),
     ('Me', 'num_methods', 'num_methods_in_pid'),
     ('PID', 'num_pids', 'num_pids_active'),
-    ('LCD', 'num_lcds', 'num_lcds_active')
 ]
 
 PI_VERSIONS = {

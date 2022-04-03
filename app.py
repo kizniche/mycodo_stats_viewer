@@ -54,29 +54,34 @@ def default_page():
         sort_type = request.form['sorttype']
         timeframe = request.form['timeframe']
 
-    app.logger.debug("0: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"0: {timeit.default_timer() - timer} sec")
 
     stats_data = get_stats_data(timeframe)
     parsed_data = {}
 
-    app.logger.debug("1: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"1: {timeit.default_timer() - timer} sec")
 
     def get_value(data_input, data_name, return_type):
         if data_input['name'] == data_name:
             for key, value in data_input.items():
                 if key == 'values':
                     if return_type == 'int':
-                        parsed_data[each_id][data_name] = '{}'.format(int(float(value[0][1])))
+                        parsed_data[each_id][data_name] = f'{int(float(value[0][1]))}'
                     elif return_type == 'float':
-                        parsed_data[each_id][data_name] = '{:.1f}'.format(float(value[0][1]))
+                        parsed_data[each_id][data_name] = f'{float(value[0][1]):.1f}'
                     elif return_type == 'str':
-                        parsed_data[each_id][data_name] = '{}'.format(str(value[0][1]))
+                        parsed_data[each_id][data_name] = f'{str(value[0][1])}'
+                    elif return_type == 'bool':
+                        try:
+                            parsed_data[each_id][data_name] = f'{bool(int(value[0][1]))}'
+                        except:
+                            parsed_data[each_id][data_name] = 'False'
 
-    app.logger.debug("2: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"2: {timeit.default_timer() - timer} sec")
 
     ids, number_installed_devices = get_ids(stats_data, sort_type, timeframe)
 
-    app.logger.debug("3: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"3: {timeit.default_timer() - timer} sec")
 
     for each_id in ids:
         parsed_data[each_id] = {}
@@ -109,7 +114,7 @@ def default_page():
         if 'time' in parsed_data[each_id]:
             parsed_data[each_id]['time'] = parsed_data[each_id]['time'][:-3]
 
-    app.logger.debug("4: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"4: {timeit.default_timer() - timer} sec")
 
     country_convert = {
         "HK": "CN"
@@ -132,12 +137,12 @@ def default_page():
             else:
                 countries_count[country]["count"] = 1
 
-    app.logger.debug("5: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"5: {timeit.default_timer() - timer} sec")
 
     # Get data for chart
     past_stats_count = past_stats_data_count()
 
-    app.logger.debug("6: {} sec".format(timeit.default_timer() - timer))
+    app.logger.debug(f"6: {timeit.default_timer() - timer} sec")
 
     return render_template('index.html',
                            columns=COLUMNS,
@@ -167,13 +172,19 @@ def id_stats(stat_id):
                 if key == 'values':
                     if return_type == 'int':
                         for each_value in value:
-                            parsed_data[data_name].append('{}'.format(int(float(each_value[1]))))
+                            parsed_data[data_name].append(f'{int(float(each_value[1]))}')
                     elif return_type == 'float':
                         for each_value in value:
-                            parsed_data[data_name].append('{:.1f}'.format(float(each_value[1])))
+                            parsed_data[data_name].append(f'{float(each_value[1]):.1f}')
                     elif return_type == 'str':
                         for each_value in value:
-                            parsed_data[data_name].append('{}'.format(str(each_value[1])))
+                            parsed_data[data_name].append(f'{str(each_value[1])}')
+                    elif return_type == 'bool':
+                        for each_value in value:
+                            try:
+                                parsed_data[data_name].append(f'{bool(int(each_value[1]))}')
+                            except:
+                                parsed_data[data_name].append('False')
 
     for series in stats_data_id['series']:
         if series['name'] == 'RPi_revision':
@@ -199,8 +210,7 @@ def id_stats(stat_id):
 
     list_versions.reverse()
 
-    app.logger.info("{name}: Completion time: {time} seconds".format(
-      name=__name__, time=timeit.default_timer() - timer))
+    app.logger.info(f"{__name__}: Completion time: {timeit.default_timer() - timer} seconds")
 
     return render_template('details.html',
                            list_versions=list_versions,
@@ -220,8 +230,7 @@ def export():
         shutil.rmtree(influx_backup_dir)
     assure_path_exists(influx_backup_dir)
 
-    cmd = "/usr/bin/influxd backup -database {db} -portable {path}".format(
-        db=INFLUXDB_DATABASE, path=influx_backup_dir)
+    cmd = f"/usr/bin/influxd backup -database {INFLUXDB_DATABASE} -portable {influx_backup_dir}"
     _, _, status = cmd_output(cmd)
 
     influxd_version_out, _, _ = cmd_output('/usr/bin/influxd version')
@@ -245,14 +254,12 @@ def export():
             shutil.rmtree(influx_backup_dir)
 
         # Send zip file to user
+        fn = f"Mycodo_Stats_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_Ver_{VERSION}_Influxdb_{influxd_version}_{socket.gethostname().replace(' ', '')}.zip"
         return send_file(
             data,
             mimetype='application/zip',
             as_attachment=True,
-            attachment_filename='Mycodo_Stats_{dt}_Ver_{mv}_Influxdb_{iv}_{host}.zip'.format(
-                mv=VERSION, iv=influxd_version,
-                host=socket.gethostname().replace(' ', ''),
-                dt=datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+            attachment_filename=fn
         )
 
 
@@ -295,47 +302,45 @@ def thread_import_influxdb(tmp_folder):
     try:
         client.drop_database(mycodo_db_backup)
     except Exception as msg:
-        app.logger.error("Error while deleting db prior to restore: {}".format(msg))
+        app.logger.error(f"Error while deleting db prior to restore: {msg}")
 
     # Restore the backup to new database mycodo_db_bak
     try:
         app.logger.info("Creating tmp db with restore data")
-        command = "influxd restore -portable -db {db} -newdb {dbn} {dir}".format(
-            db=mycodo_db, dbn=mycodo_db_backup, dir=tmp_folder)
-        app.logger.info("executing '{}'".format(command))
+        command = f"influxd restore -portable -db {mycodo_db} -newdb {mycodo_db_backup} {tmp_folder}"
+        app.logger.info(f"executing '{command}'")
         cmd = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
             shell=True)
         cmd_out, cmd_err = cmd.communicate()
         cmd_status = cmd.wait()
-        app.logger.info("command output: {}\nErrors: {}\nStatus: {}".format(
-            cmd_out.decode('utf-8'), cmd_err, cmd_status))
+        app.logger.info(f"command output: {cmd_out.decode('utf-8')}\nErrors: {cmd_err}\nStatus: {cmd_status}")
     except Exception as msg:
-        app.logger.info("Error during restore of data to backup db: {}".format(msg))
+        app.logger.info(f"Error during restore of data to backup db: {msg}")
 
     # Copy all measurements from backup to current database
     try:
         app.logger.info("Beginning restore of data from tmp db to main db. This could take a while...")
-        query_str = "SELECT * INTO {}..:MEASUREMENT FROM /.*/ GROUP BY *".format(mycodo_db)
+        query_str = f"SELECT * INTO {mycodo_db}..:MEASUREMENT FROM /.*/ GROUP BY *"
         client.query(query_str)
         app.logger.info("Restore of data from tmp db complete.")
     except Exception as msg:
-        app.logger.info("Error during copy of measurements from backup db to production db: {}".format(msg))
+        app.logger.info(f"Error during copy of measurements from backup db to production db: {msg}")
 
     # Delete backup database
     try:
         app.logger.info("Deleting tmp db")
         client.drop_database(mycodo_db_backup)
     except Exception as msg:
-        app.logger.info("Error while deleting db after restore: {}".format(msg))
+        app.logger.info(f"Error while deleting db after restore: {msg}")
 
     # Delete tmp directory if it exists
     try:
         app.logger.info("Deleting influxdb restore tmp directory...")
         shutil.rmtree(tmp_folder)
     except Exception as msg:
-        app.logger.info("Error while deleting tmp file directory: {}".format(msg))
+        app.logger.info(f"Error while deleting tmp file directory: {msg}")
 
 
 def import_influxdb(form_request):
@@ -364,8 +369,7 @@ def import_influxdb(form_request):
             elif not any(".manifest" in s for s in file_list):
                 error.append("No '.manifest' file found in archive")
         except Exception as err:
-            error.append("Exception while opening zip file: "
-                         "{err}".format(err=err))
+            error.append(f"Exception while opening zip file: {err}")
 
         if not error:
             # Unzip file
@@ -374,8 +378,7 @@ def import_influxdb(form_request):
                 zip_ref.extractall(tmp_folder)
                 zip_ref.close()
             except Exception as err:
-                error.append("Exception while extracting zip file: "
-                             "{err}".format(err=err))
+                error.append(f"Exception while extracting zip file: {err}")
 
         if not error:
             try:
@@ -385,11 +388,10 @@ def import_influxdb(form_request):
                 import_settings_db.start()
                 return "success"
             except Exception as err:
-                error.append("Exception while importing database: "
-                             "{err}".format(err=err))
+                error.append(f"Exception while importing database: {err}")
 
     except Exception as err:
-        error.append("Exception: {}".format(err))
+        error.append(f"Exception: {err}")
 
     if error:
         app.logger.error(error)
